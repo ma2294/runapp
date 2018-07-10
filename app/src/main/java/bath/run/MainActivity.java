@@ -5,6 +5,7 @@ import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
@@ -58,21 +59,13 @@ public class MainActivity extends AppCompatActivity implements
     static final int JOB_ID = 1;
     private static final String TAG = "l";
     public static int dailySteps = 0;
-    public static int weeklySteps = 0;
-    public static int timer = 30000;
-    public static boolean hasUpdated = false;
     public static GoogleApiClient mGoogleApiClient;
-    final Handler handler = new Handler();
-    public int t;
     Toolbar toolbar;
     GoalCompletion goalCompletion = new GoalCompletion();
     DayOfTheWeek dotw = new DayOfTheWeek();
     DatabaseHelper db = new DatabaseHelper(this);
-    List<User> mUsers = new ArrayList<User>();
     private FormStatePagerAdapter mFormStatePagerAdapter;
     private ViewPager mViewPager;
-    private TextView tvWeekSteps;
-    private float scaledStepCount = 0;
     private ImageView imgMon;
     private ImageView imgTue;
     private ImageView imgWed;
@@ -145,14 +138,20 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
         setNavigationListener();
         runDb(); //if db does not exist, creates one.
-        workUserList(); //updates db
+        //workUserList(); //updates db
     }
 
 
     @Override
     protected void onStart() {
         super.onStart();
-        Log.i(TAG, "onStart: f");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setDayTextView();
+        db.pullFromDb();
     }
 
     private void initViews() {
@@ -177,8 +176,6 @@ public class MainActivity extends AppCompatActivity implements
             Log.i(TAG, "onConnected: Job already scheduled, updating ui");
             setSteps();
         }
-        setDayTextView();
-        workUserList();
     }
 
     public void scheduleJob() {
@@ -213,10 +210,10 @@ public class MainActivity extends AppCompatActivity implements
         SQLiteDatabase collectionDB = db.getWritableDatabase();
     }
 
-    public void workUserList() {
-        db.getUsers();
-        System.out.println("week = " + User.getWeek());
-    }
+    // public void workUserList() {
+    //     db.getUsers();
+    //     System.out.println("week = " + User.getWeek());
+    //  }
 
 
     @Override
@@ -271,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
 
-                switch(id) {
+                switch (id) {
 
                     case R.id.action_home:
                         Log.i(TAG, "onNavigatbonItemSelected: Profile");
@@ -287,6 +284,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
     }
+
     private void setupProfilePager(ViewPager viewPager) {
         FormStatePagerAdapter adapter = new FormStatePagerAdapter(getSupportFragmentManager());
 
@@ -346,9 +344,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onConnectionSuspended(int i) {
-
         Log.e("HistoryAPI", "onConnectionSuspended");
-
     }
 
     @Override

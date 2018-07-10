@@ -7,6 +7,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,13 +23,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int VERSION = 1;
     private static final String DATABASE_NAME = "user";
     private static final String TAG = "DatabaseHelper";
-    private List<User> mUser;
-
-    // private List<User> mUser;
-    private Context mContext;
-    private SQLiteDatabase mDatabase;
     DayOfTheWeek dotw = new DayOfTheWeek();
-    List<User> users;
+    private SQLiteDatabase mDatabase;
     private String whereClause = "week = ?";
     private String[] whereArgs = new String[]{
             String.valueOf(dotw.getWeek())
@@ -36,8 +32,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public DatabaseHelper(Context context) {
         super(context, "user.db", null, VERSION);
-
-        users = new ArrayList<>();
     }
 
     @Override
@@ -53,11 +47,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    private UserCursorWrapper queryUser(String whereClause, String[] whereArgs) {
+    private Cursor queryUser(String whereClause, String[] whereArgs) {
 
-        mDatabase = this.getReadableDatabase();
-        System.out.println("query user called");
-        Cursor cursor = mDatabase.query(
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(
                 UserDbSchema.UserTable.NAME,
                 null,
                 whereClause,
@@ -66,23 +59,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 null,
                 null
         );
-        return new UserCursorWrapper(cursor);
+        return cursor;
     }
 
-    public List<User> getUsers() {
+    //Query db where date = current date. Sets booleans to current column values. Sets this to user.
+    public void pullFromDb() {
         System.out.println("get users called");
-        UserCursorWrapper cursor = queryUser(whereClause, whereArgs);
-        //  System.out.println(cursor.getUser());
+        Cursor cursor = queryUser(whereClause, whereArgs);
         try {
             cursor.moveToFirst();
+
             while (!cursor.isAfterLast()) {
-                users.add(cursor.getUser());
+                System.out.println("while..");
+                int weekCol = cursor.getInt(0);
+                System.out.println(weekCol);
+                boolean monday = cursor.getInt(1) > 0;
+                boolean tuesday = cursor.getInt(2) > 0;
+                boolean wednesday = cursor.getInt(3) > 0;
+                boolean thursday = cursor.getInt(4) > 0;
+                boolean friday = cursor.getInt(5) > 0;
+                boolean saturday = cursor.getInt(6) > 0;
+                boolean sunday = cursor.getInt(7) > 0;
+
+                User.setMonday(monday);
+                User.setTuesday(tuesday);
+                User.setWednesday(wednesday);
+                User.setThursday(thursday);
+                User.setFriday(friday);
+                User.setSaturday(saturday);
+                User.setSunday(sunday);
+
                 cursor.moveToNext();
             }
         } finally {
             cursor.close();
         }
-        return users;
     }
 
 

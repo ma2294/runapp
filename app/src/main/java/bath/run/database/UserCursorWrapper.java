@@ -27,6 +27,9 @@ public class UserCursorWrapper extends CursorWrapper {
         boolean sunday = Boolean.parseBoolean(getString(getColumnIndex(UserDbSchema.UserTable.Cols.SUNDAY)));
 
         User user = new User(dotw.getWeek());
+        System.out.println(monday);
+        System.out.println(tuesday);
+        System.out.println(weekCol);
         User.setMonday(monday);
         User.setTuesday(tuesday);
         User.setWednesday(wednesday);
@@ -37,6 +40,7 @@ public class UserCursorWrapper extends CursorWrapper {
 
 
         System.out.println("Week " + user.getWeek());
+        System.out.println(user.toString());
         return user;
     }
 }
