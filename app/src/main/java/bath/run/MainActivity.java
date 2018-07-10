@@ -1,5 +1,6 @@
 package bath.run;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements
     DatabaseHelper db = new DatabaseHelper(this);
     private FormStatePagerAdapter mFormStatePagerAdapter;
     private ViewPager mViewPager;
+    private ViewPager profileViewPager;
     private ImageView imgMon;
     private ImageView imgTue;
     private ImageView imgWed;
@@ -150,8 +152,8 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        setDayTextView();
         db.pullFromDb();
+        setDayTextView();
     }
 
     private void initViews() {
@@ -271,12 +273,13 @@ public class MainActivity extends AppCompatActivity implements
                 switch (id) {
 
                     case R.id.action_home:
-                        Log.i(TAG, "onNavigatbonItemSelected: Profile");
+                        Log.i(TAG, "onNavigatbonItemSelected: Home");
                         setupViewPager(mViewPager);
                         break;
                     case R.id.action_profile:
-                        Log.i(TAG, "onNavigationItemSelected: Home");
+                        Log.i(TAG, "onNavigationItemSelected: Profile");
                         setupProfilePager(mViewPager);
+
                         break;
                     //Todo add cases for remaining nav items.
                 }
@@ -287,7 +290,6 @@ public class MainActivity extends AppCompatActivity implements
 
     private void setupProfilePager(ViewPager viewPager) {
         FormStatePagerAdapter adapter = new FormStatePagerAdapter(getSupportFragmentManager());
-
         adapter.addFragment(new ProfileFragment(), "User Profile");
         viewPager.setAdapter(adapter);
     }
