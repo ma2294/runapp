@@ -55,7 +55,8 @@ import bath.run.StepCountFragment;
 //add  View.OnClickListener to implements list if using onClick switch in the future
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener
+        , DissonanceFormFragment.onFormCompletionListener {
 
     static final int JOB_ID = 1;
     private static final String TAG = "l";
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements
     GoalCompletion goalCompletion = new GoalCompletion();
     DayOfTheWeek dotw = new DayOfTheWeek();
     DatabaseHelper db = new DatabaseHelper(this);
+    DissonanceFormModel dissonanceFormModel = DissonanceFormModel.getInstance();
     private FormStatePagerAdapter mFormStatePagerAdapter;
     private ViewPager mViewPager;
     private ViewPager profileViewPager;
@@ -154,6 +156,8 @@ public class MainActivity extends AppCompatActivity implements
         super.onResume();
         db.pullFromDb();
         setDayTextView();
+
+        System.out.println(dissonanceFormModel.toString());
     }
 
     private void initViews() {
@@ -279,9 +283,11 @@ public class MainActivity extends AppCompatActivity implements
                     case R.id.action_profile:
                         Log.i(TAG, "onNavigationItemSelected: Profile");
                         setupProfilePager(mViewPager);
-
                         break;
-                    //Todo add cases for remaining nav items.
+                    case R.id.action_custom:
+                        Log.i(TAG, "onNavigationItemSelected: Custom");
+                        setupDissonancePager(mViewPager);
+                        //Todo add cases for remaining nav items.
                 }
                 return true;
             }
@@ -291,6 +297,13 @@ public class MainActivity extends AppCompatActivity implements
     private void setupProfilePager(ViewPager viewPager) {
         FormStatePagerAdapter adapter = new FormStatePagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new ProfileFragment(), "User Profile");
+        adapter.addFragment(new DissonanceFormFragment(), "Dissonance Form Fragment");
+        viewPager.setAdapter(adapter);
+    }
+
+    private void setupDissonancePager(ViewPager viewPager) {
+        FormStatePagerAdapter adapter = new FormStatePagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new DissonanceFormFragment(), "Dissonance Form Fragment");
         viewPager.setAdapter(adapter);
     }
 
@@ -334,6 +347,16 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             imgSun.setImageResource(R.drawable.crossicon);
         }
+    }
+
+    /*
+    Method is linked to dissonanceformfragment as an interface.
+     */
+    public void onFormCompletion() {
+        Log.i(TAG, "onFormCompleted: Called");
+        setupViewPager(mViewPager);
+        Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
+        //TODO store / update user answers to new table in db - dissonance.db
     }
 
     @Override

@@ -10,4 +10,37 @@
     <string name="menu_weekly_step_goal">Set weekly step goal</string>
     <string name="menu_calorie_goal">Edit calorie goal</string>
 
+
+    <string name="goal_welcome_text"> The purpose of this form is to gather an initial understanding
+    of your attitude towards exercise. It is in your best interest to fill this form out as
+    accurately as possible, as it will result in a more tailored and appropriate user experience. </string>
+    <string name="goal_question_1">[1/3] Which statement best fits your attitude towards exercising?</string>
+    <string-array name="goal_question_array">
+        <item>Care is low</item>
+        <item>Care is med</item>
+        <item>Care is high</item>
+    </string-array>
+
+    <string name="goal_question_2">[2/3] Which statement best represents your frequency of exercise?</string>
+    <string-array name="goal_question_2_array">
+        <item>low (1-2 times a week)</item>
+        <item>med (3-4 times a week)</item>
+        <item>high (5+ times a week)</item>
+    </string-array>
+
+    <string name="goal_question_3">[3/3] Which statement best represents your competitiveness</string>
+    <string-array name="goal_question_3_array">
+        <item>low (I am not motivated by peer influence or competition)</item>
+        <item>med (I am slightly motivated by peer influence or competition)</item>
+        <item>high (I am significantly motivated by peer influence or competition)</item>
+    </string-array>
+
+
+
+    <string name="weight_prompt">choose a time</string>
+    <string-array name="weight_array">
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Never</item>
+    </string-array>
 </resources>

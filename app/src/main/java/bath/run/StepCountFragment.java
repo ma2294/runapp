@@ -34,7 +34,6 @@ public class StepCountFragment extends Fragment {
             progress = ((int) total);
             tvDailyStepsPercentage.setText(String.valueOf(progress) + "%");
             progressBarDailySteps.setProgress(progress);
-            System.out.println("Loop");
             handler.postDelayed(uiUpdater, delayMillis);
         }
     };
@@ -52,6 +51,7 @@ public class StepCountFragment extends Fragment {
         tvMotivationalMessage.setText(mm.getMotivationalMessage());
         total = GoalCompletion.workOutRemainingPercentage(MainActivity.dailySteps, GoalCompletion.getDailyStepsGoal());
         Log.d(TAG, "onCreateView: started..");
+
 
         return view;
     }
