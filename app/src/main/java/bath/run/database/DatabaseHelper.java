@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bath.run.DayOfTheWeek;
+import bath.run.DissonanceFormModel;
 import bath.run.database.UserDbSchema.UserTable;
 
 /**
@@ -20,14 +21,21 @@ import bath.run.database.UserDbSchema.UserTable;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final int VERSION = 1;
-    private static final String DATABASE_NAME = "user";
+    private static final int VERSION = 2;
+    private static final String TABLE_NAME_USER = "user";
+    private static final String DATABASE_NAME = "user.db";
     private static final String TAG = "DatabaseHelper";
+    DissonanceFormModel dissonanceFormModel = DissonanceFormModel.getInstance();
     DayOfTheWeek dotw = new DayOfTheWeek();
     private SQLiteDatabase mDatabase;
-    private String whereClause = "week = ?";
-    private String[] whereArgs = new String[]{
+    private String whereUserTable = "week = ?";
+    private String[] whereArgsUserTable = new String[]{
             String.valueOf(dotw.getWeek())
+    };
+
+    private String whereDisTable = "ROWID = ?";
+    private String[] whereArgsDisTable = new String[]{
+            String.valueOf(1)
     };
 
     public DatabaseHelper(Context context) {
@@ -37,21 +45,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(UserTable.SQL_CREATE_ENTRIES);
+        db.execSQL(UserDbSchema.UserTable.USER_DISSONANCE_ENTRIES);
         Log.i(TAG, "onCreate");
         insert(db);
+        insertDissonance(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("drop table if exists user");
+        db.execSQL("drop table if exists dissonance");
     }
 
 
-    private Cursor queryUser(String whereClause, String[] whereArgs) {
+    private Cursor queryUser(String whereClause, String[] whereArgs, String tableName) {
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(
-                UserDbSchema.UserTable.NAME,
+                tableName,
                 null,
                 whereClause,
                 whereArgs,
@@ -62,10 +73,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    public void pullFromDissonanceDb(){
+        Cursor cursor = queryUser(null, null, "dissonance");
+        try{
+            cursor.moveToFirst();
+            int one = cursor.getInt(0);
+            int two = cursor.getInt(1);
+            int three = cursor.getInt(2);
+            dissonanceFormModel.setCare(one);
+            dissonanceFormModel.setFrequency(two);
+            dissonanceFormModel.setCompetitiveness(three);
+            Log.i(TAG, "pullFromDissonanceDb: "+dissonanceFormModel.toString());
+        } finally {
+            cursor.close();
+        }
+    }
     //Query db where date = current date. Sets booleans to current column values. Sets this to user.
     public void pullFromDb() {
         System.out.println("get users called");
-        Cursor cursor = queryUser(whereClause, whereArgs);
+        Cursor cursor = queryUser(whereUserTable, whereArgsUserTable, "user");
         try {
             cursor.moveToFirst();
 
@@ -141,7 +167,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 //nothing
                 break;
         }
-        db.update("user", contentValues, whereClause, whereArgs);
+        db.update(TABLE_NAME_USER, contentValues, whereUserTable, whereArgsUserTable);
     }
 
 
@@ -160,7 +186,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("saturday", user.isSaturday() ? 1 : 0);
         contentValues.put("sunday", user.isSunday() ? 1 : 0);
 
-        db.insert(DATABASE_NAME, null, contentValues);
+        db.insert(TABLE_NAME_USER, null, contentValues);
 
+    }
+
+    public void insertDissonance(SQLiteDatabase db)
+        throws SQLException {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(UserTable.DissonanceCols.Q1, dissonanceFormModel.getCare());
+        contentValues.put(UserTable.DissonanceCols.Q2, dissonanceFormModel.getFrequency());
+        contentValues.put(UserTable.DissonanceCols.Q3, dissonanceFormModel.getCompetitiveness());
+
+        db.insert("dissonance", null, contentValues);
+    }
+
+    //TODO call when button is pressed
+    public void updateDissonance() {
+        Log.i(TAG, "updateDissonance: called");
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        System.out.println(dissonanceFormModel.toString());
+        contentValues.put("question1", dissonanceFormModel.getCare());
+        contentValues.put("question2", dissonanceFormModel.getFrequency());
+        contentValues.put("question3", dissonanceFormModel.getCompetitiveness());
+
+        db.update("dissonance", contentValues, null,null);
     }
 }

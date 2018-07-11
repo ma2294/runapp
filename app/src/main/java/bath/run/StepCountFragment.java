@@ -44,9 +44,9 @@ public class StepCountFragment extends Fragment {
         //create view object
         View view = inflater.inflate(R.layout.overview, container, false);
 
-        tvDailySteps = (TextView) view.findViewById(R.id.tvDailySteps);
-        tvDailyStepsPercentage = (TextView) view.findViewById(R.id.tvDailyStepsPercentage);
-        progressBarDailySteps = (ProgressBar) view.findViewById(R.id.progressBarDailySteps);
+        tvDailySteps = (TextView) view.findViewById(R.id.tvDailyCalories);
+        tvDailyStepsPercentage = (TextView) view.findViewById(R.id.tvDailyCaloriesPercentage);
+        progressBarDailySteps = (ProgressBar) view.findViewById(R.id.progressBarDailyCalories);
         tvMotivationalMessage = (TextView) view.findViewById(R.id.tvMotivationalMessage);
         tvMotivationalMessage.setText(mm.getMotivationalMessage());
         total = GoalCompletion.workOutRemainingPercentage(MainActivity.dailySteps, GoalCompletion.getDailyStepsGoal());

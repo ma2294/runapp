@@ -9,6 +9,11 @@ public class UserDbSchema {
     public static final class UserTable {
         //Set name of table
         public static final String NAME = "user";
+        public static final String TABLE_NAME_DISSONANCE = "dissonance";
+
+        public static final String USER_DISSONANCE_ENTRIES =
+                "CREATE TABLE "
+                        + TABLE_NAME_DISSONANCE + "(question1 INTEGER, question2 INTEGER, question3 INTEGER)";
 
         public static final String SQL_CREATE_ENTRIES =
                 "CREATE TABLE "
@@ -31,6 +36,12 @@ public class UserDbSchema {
             public static final String FRIDAY = "friday";
             public static final String SATURDAY = "saturday";
             public static final String SUNDAY = "sunday";
+        }
+
+        public static final class DissonanceCols {
+            public static final String Q1 = "question1";
+            public static final String Q2 = "question2";
+            public static final String Q3 = "question3";
         }
     }
 }

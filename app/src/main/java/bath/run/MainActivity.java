@@ -50,6 +50,7 @@ import bath.run.FormStatePagerAdapter;
 import bath.run.HeartRateFragment;
 import bath.run.ProfileFragment;
 import bath.run.StepCountFragment;
+import bath.run.database.UserDbSchema;
 
 
 //add  View.OnClickListener to implements list if using onClick switch in the future
@@ -155,9 +156,8 @@ public class MainActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         db.pullFromDb();
+        db.pullFromDissonanceDb();
         setDayTextView();
-
-        System.out.println(dissonanceFormModel.toString());
     }
 
     private void initViews() {
@@ -215,11 +215,6 @@ public class MainActivity extends AppCompatActivity implements
     public void runDb() {
         SQLiteDatabase collectionDB = db.getWritableDatabase();
     }
-
-    // public void workUserList() {
-    //     db.getUsers();
-    //     System.out.println("week = " + User.getWeek());
-    //  }
 
 
     @Override
@@ -353,10 +348,13 @@ public class MainActivity extends AppCompatActivity implements
     Method is linked to dissonanceformfragment as an interface.
      */
     public void onFormCompletion() {
+        Toast.makeText(this, "Storing results in database..", Toast.LENGTH_SHORT).show();
         Log.i(TAG, "onFormCompleted: Called");
         setupViewPager(mViewPager);
-        Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
         //TODO store / update user answers to new table in db - dissonance.db
+        db.updateDissonance();
+        Toast.makeText(this, "Results successfully stored.", Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
