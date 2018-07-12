@@ -1,4 +1,4 @@
-package bath.run;
+package bath.run.model;
 
 public class DissonanceFormModel {
     private static DissonanceFormModel instance = null;
@@ -9,7 +9,8 @@ public class DissonanceFormModel {
     private DissonanceFormModel() {
 
     }
-    //TODO complete singleton design pattern in dissonance formfragment. i.e. DissonanceFormModel getInstance();
+
+    //Singleton
     public static DissonanceFormModel getInstance() {
         if (instance == null) {
             instance = new DissonanceFormModel();
@@ -42,6 +43,11 @@ public class DissonanceFormModel {
 
     public void setCompetitiveness(int competitiveness) {
         this.competitiveness = competitiveness;
+    }
+
+    public int getAvg() {
+        int total = ((getCare() + getFrequency()) + 1) / 2;
+        return total;
     }
 
     @Override

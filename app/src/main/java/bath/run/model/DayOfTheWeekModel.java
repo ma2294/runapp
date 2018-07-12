@@ -1,4 +1,4 @@
-package bath.run;
+package bath.run.model;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -8,15 +8,20 @@ import java.util.Locale;
  * Created by mradl on 04/07/2018.
  */
 
-public class DayOfTheWeek {
+public class DayOfTheWeekModel {
 
     private String today = "";
     private int day = 0;
     public final int DAYS_IN_WEEK = 7;
+    public final int HOURS_IN_DAY = 24;
 
 
 
     Calendar sCalendar = Calendar.getInstance();
+    public int getHour() {
+        System.out.println(sCalendar.get(Calendar.HOUR_OF_DAY));
+        return sCalendar.get(Calendar.HOUR_OF_DAY);
+    }
     public int getWeek() {
 
         return sCalendar.get(Calendar.WEEK_OF_YEAR);

@@ -1,4 +1,4 @@
-package bath.run;
+package bath.run.model;
 
 import java.util.Random;
 

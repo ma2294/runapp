@@ -13,6 +13,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 public class ExampleJobService extends JobService {
     private static final String TAG = "ExampleJobService";
     private boolean jobcancelled = false;
+    MainActivity mainActivity = new MainActivity();
+
+    //TODO remove above call and make mainactivity singleton if this causes problems.
 
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
@@ -28,7 +31,7 @@ public class ExampleJobService extends JobService {
                 if (jobcancelled) {
                     return; //leave immediately.
                 }
-                MainActivity.setSteps();
+                mainActivity.setSteps();
                 Log.i(TAG, "run: Job Finished");
                 jobFinished(jobParameters, false);
             }

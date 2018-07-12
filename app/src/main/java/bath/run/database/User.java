@@ -1,8 +1,6 @@
 package bath.run.database;
 
 
-import bath.run.DayOfTheWeek;
-
 /**
  * Created by mradl on 07/07/2018.
  */

@@ -1,4 +1,4 @@
-package bath.run;
+package bath.run.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,18 +8,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import bath.run.R;
+
 /**
  * Created by mradl on 18/06/2018.
  */
 
-public class HeartRateFragment extends Fragment {
-    private static final String TAG = "HeartRateFragment";
+public class DistanceFragment extends Fragment {
+    private static final String TAG = "DistanceFragment";
+
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         //create view object
-        View view = inflater.inflate(R.layout.overview_scroll_2, container, false);
+        View view = inflater.inflate(R.layout.distance_fragment, container, false);
         Log.d(TAG, "onCreateView: started..");
 
         return view;

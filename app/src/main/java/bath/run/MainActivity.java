@@ -1,19 +1,14 @@
 package bath.run;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -26,9 +21,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -37,26 +30,24 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.fitness.Fitness;
-import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.result.DailyTotalResult;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.security.auth.login.LoginException;
-
 import bath.run.database.DatabaseHelper;
 import bath.run.database.User;
-import bath.run.CalorieFragment;
-import bath.run.DistanceFragment;
-import bath.run.FormStatePagerAdapter;
-import bath.run.HeartRateFragment;
-import bath.run.ProfileFragment;
-import bath.run.StepCountFragment;
-import bath.run.database.UserDbSchema;
+import bath.run.fragments.CalorieFragment;
+import bath.run.fragments.DissonanceFormFragment;
+import bath.run.fragments.DistanceFragment;
+import bath.run.fragments.FormStatePagerAdapter;
+import bath.run.fragments.HeartRateFragment;
+import bath.run.fragments.ProfileFragment;
+import bath.run.fragments.StepCountFragment;
+import bath.run.model.DayOfTheWeekModel;
+import bath.run.model.DissonanceFormModel;
+import bath.run.model.GoalCompletion;
+import bath.run.model.StepsModel;
 
 
 //add  View.OnClickListener to implements list if using onClick switch in the future
@@ -68,13 +59,14 @@ ProfileFragment.onProfileCompleteListener {
 
     static final int JOB_ID = 1;
     private static final String TAG = "l";
-    public static int dailySteps = 0;
     public static GoogleApiClient mGoogleApiClient;
     Toolbar toolbar;
     GoalCompletion goalCompletion = new GoalCompletion();
-    DayOfTheWeek dotw = new DayOfTheWeek();
+    DayOfTheWeekModel dotw = new DayOfTheWeekModel();
     DatabaseHelper db = new DatabaseHelper(this);
+    NotificationHelper notificationHelper;
     DissonanceFormModel dissonanceFormModel = DissonanceFormModel.getInstance();
+    StepsModel stepsModel = StepsModel.getInstance();
     private FormStatePagerAdapter mFormStatePagerAdapter;
     private ViewPager mViewPager;
     private ViewPager profileViewPager;
@@ -101,7 +93,7 @@ ProfileFragment.onProfileCompleteListener {
         return hasBeenScheduled;
     }
 
-    public static void setSteps() {
+    public void setSteps() {
 
         if (mGoogleApiClient.isConnected()) {
             Fitness.HistoryApi.readDailyTotal(mGoogleApiClient, DataType.TYPE_STEP_COUNT_DELTA)
@@ -114,8 +106,8 @@ ProfileFragment.onProfileCompleteListener {
                                         ? 0
                                         : totalSet.getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
 
-                                dailySteps = ((int) total);
-                                System.out.println("set daily steps " + dailySteps);
+                                stepsModel.setDailysteps(((int) total));
+                                System.out.println("set daily steps " + stepsModel.getDailysteps());
                                 // Update your UI here
                             } else {
                                 // Handle failure
@@ -150,8 +142,9 @@ ProfileFragment.onProfileCompleteListener {
         setSupportActionBar(toolbar);
         setNavigationListener();
         runDb(); //if db does not exist, creates one.
-        //workUserList(); //updates db
-        createNotificationChannel();
+      /*  notificationHelper = new NotificationHelper(this);
+        notificationHelper.createNotificationChannel();
+        notificationHelper.pushNotification();*/
     }
 
 
@@ -167,6 +160,11 @@ ProfileFragment.onProfileCompleteListener {
         db.pullFromDissonanceDb();
         db.pullFromProfileDb();
         setDayTextView();
+
+        notificationHelper = new NotificationHelper(this);
+        notificationHelper.createNotificationChannel();
+        notificationHelper.pushNotification();
+        Log.e(TAG, "onResume: "+dotw.getHour());
     }
 
     private void initViews() {
@@ -193,38 +191,6 @@ ProfileFragment.onProfileCompleteListener {
         }
     }
 
-    public void pushNotification() {
-        NotificationCompat.Builder mBuilder = new NotificationCompat
-                .Builder(this, "msg")
-                .setSmallIcon(R.drawable.ic_launcher_background)
-                .setContentTitle("Test notification")
-                .setContentText("Test..................")
-                .setStyle(new NotificationCompat.BigTextStyle()
-                .bigText("much longer text that cannot fit one line."))
-                .setPriority(NotificationCompat.PRIORITY_MAX);
-    //    createNotificationChannel();
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-
-// notificationId is a unique int for each notification that you must define
-        notificationManager.notify(2, mBuilder.build());
-    }
-
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            String t = "himarc";
-            CharSequence name = t;
-            String description = "tttt";
-            NotificationChannel channel = new NotificationChannel("2", name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
 
     public void scheduleJob() {
         ComponentName componentName = new ComponentName(this, ExampleJobService.class);
@@ -270,7 +236,7 @@ ProfileFragment.onProfileCompleteListener {
                 break;
 
             case R.id.action_newStepGoal:
-                goalCompletion.setDailyStepsGoal(goalCompletion.getDailyStepsGoal() * 1.5);
+                stepsModel.setDailyStepsGoal((int) (stepsModel.getDailyStepsGoal() * 1.5));
                 Toast.makeText(getApplicationContext(), "Your daily goal is being calculated..", Toast.LENGTH_SHORT).show();
                 break;
 
@@ -416,7 +382,6 @@ ProfileFragment.onProfileCompleteListener {
         Log.e("Main Activity", "onPause");
         //when user pauses app, check if daily goal is reached.
         goalCompletion.goalReached(db);
-        pushNotification();
     }
 
     @Override

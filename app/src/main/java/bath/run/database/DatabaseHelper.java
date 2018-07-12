@@ -8,12 +8,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import bath.run.DayOfTheWeek;
-import bath.run.DissonanceFormModel;
-import bath.run.UserProfileModel;
+import bath.run.model.DayOfTheWeekModel;
+import bath.run.model.DissonanceFormModel;
+import bath.run.model.UserProfileModel;
 import bath.run.database.UserDbSchema.UserTable;
 
 /**
@@ -29,7 +26,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
     DissonanceFormModel dissonanceFormModel = DissonanceFormModel.getInstance();
     UserProfileModel userProfileModel = UserProfileModel.getInstance();
-    DayOfTheWeek dotw = new DayOfTheWeek();
+    DayOfTheWeekModel dotw = new DayOfTheWeekModel();
     private SQLiteDatabase mDatabase;
     private String whereUserTable = "week = ?";
     private String[] whereArgsUserTable = new String[]{

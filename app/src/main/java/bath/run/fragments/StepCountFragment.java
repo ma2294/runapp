@@ -1,4 +1,4 @@
-package bath.run;
+package bath.run.fragments;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +11,12 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import bath.run.model.GoalCompletion;
+import bath.run.MainActivity;
+import bath.run.model.MotivationalMessages;
+import bath.run.R;
+import bath.run.model.StepsModel;
+
 /**
  * Created by mradl on 18/06/2018.
  */
@@ -19,6 +25,7 @@ public class StepCountFragment extends Fragment {
     private static final String TAG = "StepCountFragment";
     final Handler handler = new Handler();
     MotivationalMessages mm = new MotivationalMessages();
+    StepsModel stepsModel = StepsModel.getInstance();
     double total = 0;
     int progress = 0;
     private final int delayMillis = 5000;
@@ -29,8 +36,8 @@ public class StepCountFragment extends Fragment {
     public Runnable uiUpdater = new Runnable() {
         @Override
         public void run() {
-            tvDailySteps.setText(String.valueOf(MainActivity.dailySteps));
-            total = GoalCompletion.workOutRemainingPercentage(MainActivity.dailySteps, GoalCompletion.getDailyStepsGoal());
+            tvDailySteps.setText(String.valueOf(stepsModel.getDailysteps()));
+            total = GoalCompletion.workOutRemainingPercentage(stepsModel.getDailysteps(), stepsModel.getDailyStepsGoal());
             progress = ((int) total);
             tvDailyStepsPercentage.setText(String.valueOf(progress) + "%");
             progressBarDailySteps.setProgress(progress);
@@ -49,7 +56,7 @@ public class StepCountFragment extends Fragment {
         progressBarDailySteps = (ProgressBar) view.findViewById(R.id.progressBarDailyCalories);
         tvMotivationalMessage = (TextView) view.findViewById(R.id.tvMotivationalMessage);
         tvMotivationalMessage.setText(mm.getMotivationalMessage());
-        total = GoalCompletion.workOutRemainingPercentage(MainActivity.dailySteps, GoalCompletion.getDailyStepsGoal());
+        total = GoalCompletion.workOutRemainingPercentage(stepsModel.getDailysteps(), stepsModel.getDailyStepsGoal());
         Log.d(TAG, "onCreateView: started..");
 
 
