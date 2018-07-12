@@ -4,174 +4,149 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-   >
+    tools:layout_editor_absoluteY="25dp">
 
     <ImageView
+        android:id="@+id/imageView6"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"
-        android:alpha=".5"/>
+        android:alpha=".5"
+        android:background="@color/black" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/disclaimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="68dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
         android:text="Please note that this information is required to\n provide an accurate estimate of your calories expended"
         android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.537" />
+        app:layout_constraintTop_toBottomOf="@+id/spinnerWeightArray" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/txtWeightPrompt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="68dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="60dp"
         android:text="Weight prompt"
         android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.082"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.436" />
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:textColor="@color/white"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="68dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="32dp"
         android:text="Height (cm)"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.081"
+        android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.322" />
+        app:layout_constraintTop_toBottomOf="@+id/calorieTitle" />
 
     <TextView
         android:id="@+id/calorieTitle"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="36dp"
-        android:textColor="@color/white"
-        android:layout_marginTop="68dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="32dp"
         android:text="Weight (kg)"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.074"
+        android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.201" />
+        app:layout_constraintTop_toBottomOf="@+id/txtUserName" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/txtUserName"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="36dp"
-        android:textColor="@color/white"
-        android:layout_marginTop="68dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="84dp"
         android:text="Name"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.072"
+        android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.078" />
+        app:layout_constraintTop_toTopOf="@+id/imageView6" />
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/editHeight"
         android:layout_width="120dp"
         android:layout_height="40dp"
-        android:layout_marginBottom="320dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
         android:ems="10"
-        android:textColor="@color/white"
         android:hint="150cm"
         android:inputType="number"
+        android:textColor="@color/white"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.628"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/textView4"
+        app:layout_constraintTop_toBottomOf="@+id/editWeight" />
 
     <EditText
-        android:id="@+id/editText3"
+        android:id="@+id/editWeight"
         android:layout_width="120dp"
         android:layout_height="40dp"
-        android:layout_marginBottom="368dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="32dp"
         android:ems="10"
-        android:textColor="@color/white"
         android:hint="60kg"
         android:inputType="number"
+        android:textColor="@color/white"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.628"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/calorieTitle"
+        app:layout_constraintTop_toBottomOf="@+id/editName" />
 
     <EditText
-        android:id="@+id/editText2"
+        android:id="@+id/editName"
         android:layout_width="120dp"
         android:layout_height="40dp"
-        android:layout_marginEnd="8dp"
-        android:textSize="12sp"
-        android:layout_marginTop="104dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="84dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:textColor="@color/white"
         android:text="Name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.66"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@+id/txtUserName"
+        app:layout_constraintTop_toTopOf="@+id/imageView6" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/btnUpdateProfile"
         style="@android:style/Widget.Material.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="136dp"
+        android:layout_marginTop="60dp"
         android:background="@color/runBlue"
+        android:text="Update"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/disclaimer" />
+
+    <Spinner
+        android:id="@+id/spinnerWeightArray"
+        android:layout_width="150dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="56dp"
+        android:background="@color/white"
+        android:entries="@array/weight_array"
+        android:popupTheme="@style/PopupStyleSpinner"
+        android:prompt="@string/weight_prompt"
+        android:theme="@style/mySpinnerItemStyle"
+        app:layout_constraintStart_toEndOf="@+id/txtWeightPrompt"
+        app:layout_constraintTop_toBottomOf="@+id/editHeight" />
+
+    <ImageView
+        android:id="@+id/imageView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="128dp"
-        android:layout_marginTop="412dp"
-        android:text="Update"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.058"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="150dp"
-        android:layout_height="35dp"
-        android:layout_marginEnd="44dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.499"
-        android:prompt="@string/weight_prompt"
-        android:entries="@array/weight_array"/>
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/spinnerWeightArray"
+        app:layout_constraintStart_toStartOf="@+id/spinnerWeightArray"
+        app:layout_constraintTop_toTopOf="@+id/spinnerWeightArray"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/arrowdown" />
 </android.support.constraint.ConstraintLayout>

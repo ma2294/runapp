@@ -10,10 +10,15 @@ public class UserDbSchema {
         //Set name of table
         public static final String NAME = "user";
         public static final String TABLE_NAME_DISSONANCE = "dissonance";
+        public static final String TABLE_NAME_PROFILE = "profile";
 
         public static final String USER_DISSONANCE_ENTRIES =
                 "CREATE TABLE "
                         + TABLE_NAME_DISSONANCE + "(question1 INTEGER, question2 INTEGER, question3 INTEGER)";
+
+        public static final String USER_PROFILE_ENTRIES =
+                "CREATE TABLE "
+                        + TABLE_NAME_PROFILE + "(name TEXT, weight INTEGER, height INTEGER, weightprompt INTEGER)";
 
         public static final String SQL_CREATE_ENTRIES =
                 "CREATE TABLE "
@@ -43,5 +48,7 @@ public class UserDbSchema {
             public static final String Q2 = "question2";
             public static final String Q3 = "question3";
         }
+
+
     }
 }

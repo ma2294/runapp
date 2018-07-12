@@ -2,17 +2,23 @@ package bath.run;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -57,7 +63,8 @@ import bath.run.database.UserDbSchema;
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener
-        , DissonanceFormFragment.onFormCompletionListener {
+        , DissonanceFormFragment.onFormCompletionListener,
+ProfileFragment.onProfileCompleteListener {
 
     static final int JOB_ID = 1;
     private static final String TAG = "l";
@@ -144,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements
         setNavigationListener();
         runDb(); //if db does not exist, creates one.
         //workUserList(); //updates db
+        createNotificationChannel();
     }
 
 
@@ -157,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onResume();
         db.pullFromDb();
         db.pullFromDissonanceDb();
+        db.pullFromProfileDb();
         setDayTextView();
     }
 
@@ -181,6 +190,39 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             Log.i(TAG, "onConnected: Job already scheduled, updating ui");
             setSteps();
+        }
+    }
+
+    public void pushNotification() {
+        NotificationCompat.Builder mBuilder = new NotificationCompat
+                .Builder(this, "msg")
+                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setContentTitle("Test notification")
+                .setContentText("Test..................")
+                .setStyle(new NotificationCompat.BigTextStyle()
+                .bigText("much longer text that cannot fit one line."))
+                .setPriority(NotificationCompat.PRIORITY_MAX);
+    //    createNotificationChannel();
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+// notificationId is a unique int for each notification that you must define
+        notificationManager.notify(2, mBuilder.build());
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            String t = "himarc";
+            CharSequence name = t;
+            String description = "tttt";
+            NotificationChannel channel = new NotificationChannel("2", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
         }
     }
 
@@ -357,12 +399,24 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
+    /*
+ Method is linked to profileformfragment as an interface.
+  */
+    public void onProfileUpdated() {
+        Log.i(TAG, "onProfileCompleted: Called");
+        setupViewPager(mViewPager);
+        //TODO store / update user answers to new table in db - dissonance.db
+        db.updateProfile();
+        Toast.makeText(this, "Results successfully stored.", Toast.LENGTH_SHORT).show();
+
+    }
     @Override
     protected void onPause() {
         super.onPause();
         Log.e("Main Activity", "onPause");
         //when user pauses app, check if daily goal is reached.
         goalCompletion.goalReached(db);
+        pushNotification();
     }
 
     @Override

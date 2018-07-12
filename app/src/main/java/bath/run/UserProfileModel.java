@@ -2,18 +2,20 @@ package bath.run;
 
 public class UserProfileModel {
 
+    private static UserProfileModel instance = null;
     private int weight = 0;
     private int height = 0;
     private String name = "";
-    private static UserProfileModel instance = null;
+    private int weightPrompt = 0;
 
-    private UserProfileModel(){
+    private UserProfileModel() {
 
     }
-    //Singleton
-    public static UserProfileModel getInstance(){
-        if (instance == null){
-            return new UserProfileModel();
+
+    //Singleton. Enables me to change specific instance from notfications in future update.
+    public static UserProfileModel getInstance() {
+        if (instance == null) {
+            instance = new UserProfileModel();
         }
         return instance;
     }
@@ -41,5 +43,19 @@ public class UserProfileModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getWeightPrompt() {
+        return weightPrompt;
+    }
+
+    public void setWeightPrompt(int weightPrompt) {
+        this.weightPrompt = weightPrompt;
+    }
+
+    @Override
+    public String toString() {
+        return getName() + " . H: " + getHeight()+ ". W: "+getWeight()+ ". " +
+                "Time per weigh prompt: "+getWeightPrompt();
     }
 }

@@ -28,11 +28,11 @@
         <item>high (5+ times a week)</item>
     </string-array>
 
-    <string name="goal_question_3">[3/3] Which statement best represents your competitiveness</string>
+    <string name="goal_question_3">[3/3] Which statement best represents your motivation gained from your competitiveness or peer influence from others</string>
     <string-array name="goal_question_3_array">
-        <item>low (I am not motivated by peer influence or competition)</item>
-        <item>med (I am slightly motivated by peer influence or competition)</item>
-        <item>high (I am significantly motivated by peer influence or competition)</item>
+        <item>low (not motivated)</item>
+        <item>med (slightly motivated)</item>
+        <item>high (significantly motivated)</item>
     </string-array>
 
 
