@@ -9,7 +9,6 @@ public class UserProfileModel {
     private int weightPrompt = 0;
 
     private UserProfileModel() {
-
     }
 
     //Singleton. Enables me to change specific instance from notfications in future update.
@@ -19,7 +18,6 @@ public class UserProfileModel {
         }
         return instance;
     }
-
 
     public int getWeight() {
         return weight;

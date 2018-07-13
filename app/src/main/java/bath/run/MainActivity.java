@@ -1,19 +1,15 @@
 package bath.run;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -42,8 +38,10 @@ import bath.run.fragments.DissonanceFormFragment;
 import bath.run.fragments.DistanceFragment;
 import bath.run.fragments.FormStatePagerAdapter;
 import bath.run.fragments.HeartRateFragment;
+import bath.run.fragments.Landing_page.WelcomeLandingFragment;
 import bath.run.fragments.ProfileFragment;
 import bath.run.fragments.StepCountFragment;
+import bath.run.fragments.Landing_page.WelcomeDissonanceFragment;
 import bath.run.model.DayOfTheWeekModel;
 import bath.run.model.DissonanceFormModel;
 import bath.run.model.GoalCompletion;
@@ -55,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener
         , DissonanceFormFragment.onFormCompletionListener,
-ProfileFragment.onProfileCompleteListener {
+ProfileFragment.onProfileCompleteListener, WelcomeDissonanceFragment.onFormCompletionListener {
 
     static final int JOB_ID = 1;
     private static final String TAG = "l";
@@ -64,12 +62,13 @@ ProfileFragment.onProfileCompleteListener {
     GoalCompletion goalCompletion = new GoalCompletion();
     DayOfTheWeekModel dotw = new DayOfTheWeekModel();
     DatabaseHelper db = new DatabaseHelper(this);
-    NotificationHelper notificationHelper;
+
     DissonanceFormModel dissonanceFormModel = DissonanceFormModel.getInstance();
     StepsModel stepsModel = StepsModel.getInstance();
     private FormStatePagerAdapter mFormStatePagerAdapter;
     private ViewPager mViewPager;
     private ViewPager profileViewPager;
+    private ViewPager mViewPagerWelcome;
     private ImageView imgMon;
     private ImageView imgTue;
     private ImageView imgWed;
@@ -77,6 +76,41 @@ ProfileFragment.onProfileCompleteListener {
     private ImageView imgFri;
     private ImageView imgSat;
     private ImageView imgSun;
+    public static Context mContext;
+
+//TODO add third fragment layout to starter screen where user can customise login screen through selecting the type of scenery they desire. I.e. what bg image to use.
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Log.i(TAG, "onCreate: ");
+
+        initViews();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Fitness.HISTORY_API)
+                .addApi(Fitness.RECORDING_API)
+                .addScope(new Scope(Scopes.FITNESS_ACTIVITY_READ_WRITE))
+                .addConnectionCallbacks(this)
+                .enableAutoManage(this, 0, this)
+                .build();
+
+
+        mFormStatePagerAdapter = new FormStatePagerAdapter(getSupportFragmentManager());
+        setupViewPager(mViewPager);
+
+        setSupportActionBar(toolbar);
+        setNavigationListener();
+        runDb(); //if db does not exist, creates one.
+        //runNotifications(this);
+        mContext = this;
+    }
+
+    public void runNotifications(Context context) {
+        NotificationHelper notificationHelper = new NotificationHelper(context);
+        notificationHelper.createNotificationChannel();
+        notificationHelper.pushNotification();
+    }
 
     public static boolean isJobServiceOn(Context context) {
         JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
@@ -89,12 +123,11 @@ ProfileFragment.onProfileCompleteListener {
                 break;
             }
         }
-
         return hasBeenScheduled;
     }
 
-    public void setSteps() {
 
+    public void setSteps() {
         if (mGoogleApiClient.isConnected()) {
             Fitness.HistoryApi.readDailyTotal(mGoogleApiClient, DataType.TYPE_STEP_COUNT_DELTA)
                     .setResultCallback(new ResultCallback<DailyTotalResult>() {
@@ -119,34 +152,6 @@ ProfileFragment.onProfileCompleteListener {
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Log.i(TAG, "onCreate: ");
-
-        initViews();
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Fitness.HISTORY_API)
-                .addApi(Fitness.RECORDING_API)
-                .addScope(new Scope(Scopes.FITNESS_ACTIVITY_READ_WRITE))
-                .addConnectionCallbacks(this)
-                .enableAutoManage(this, 0, this)
-                .build();
-
-
-        mFormStatePagerAdapter = new FormStatePagerAdapter(getSupportFragmentManager());
-        setupViewPager(mViewPager);
-
-        setSupportActionBar(toolbar);
-        setNavigationListener();
-        runDb(); //if db does not exist, creates one.
-      /*  notificationHelper = new NotificationHelper(this);
-        notificationHelper.createNotificationChannel();
-        notificationHelper.pushNotification();*/
-    }
-
 
     @Override
     protected void onStart() {
@@ -156,15 +161,19 @@ ProfileFragment.onProfileCompleteListener {
     @Override
     protected void onResume() {
         super.onResume();
+        mContext = this;
         db.pullFromDb();
         db.pullFromDissonanceDb();
         db.pullFromProfileDb();
         setDayTextView();
 
-        notificationHelper = new NotificationHelper(this);
-        notificationHelper.createNotificationChannel();
-        notificationHelper.pushNotification();
-        Log.e(TAG, "onResume: "+dotw.getHour());
+        //Has user visited before? If yes continue, if no open welcome screen and dissonance form.
+        if(!dissonanceFormModel.isAnswered()) {
+            //TODO force open dissonance form
+            Log.e(TAG, "onResume: USER MUST FILL IN FORM");
+            setupWelcomePager(mViewPagerWelcome);
+        }
+
     }
 
     private void initViews() {
@@ -177,6 +186,7 @@ ProfileFragment.onProfileCompleteListener {
         imgSun = (ImageView) findViewById(R.id.imgSun);
         toolbar = (Toolbar) findViewById(R.id.app_bar);
         mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPagerWelcome = (ViewPager) findViewById(R.id.containerWelcomePage);
     }
 
     public void onConnected(@Nullable Bundle bundle) {
@@ -191,11 +201,9 @@ ProfileFragment.onProfileCompleteListener {
         }
     }
 
-
     public void scheduleJob() {
         ComponentName componentName = new ComponentName(this, ExampleJobService.class);
         JobInfo info = new JobInfo.Builder(JOB_ID, componentName)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
                 .setPersisted(true)
                 .setPeriodic(15 * 60 * 1000)
                 .build();
@@ -310,8 +318,15 @@ ProfileFragment.onProfileCompleteListener {
         viewPager.setAdapter(adapter);
     }
 
+    private void setupWelcomePager(ViewPager viewPager) {
+        FormStatePagerAdapter adapter = new FormStatePagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new WelcomeLandingFragment(), "First welcome Fragment");
+        adapter.addFragment(new WelcomeDissonanceFragment(), "Welcome Dissonance Form Fragment"); //same form to dissonant pager, but different view used.
+        viewPager.setAdapter(adapter);
+    }
+
     public void setViewPager(int fragmentNumber) {
-        mViewPager.setCurrentItem(fragmentNumber);
+        mViewPagerWelcome.setCurrentItem(fragmentNumber);
     }
 
     public void setDayTextView() {
@@ -356,15 +371,13 @@ ProfileFragment.onProfileCompleteListener {
     Method is linked to dissonanceformfragment as an interface.
      */
     public void onFormCompletion() {
-        Toast.makeText(this, "Storing results in database..", Toast.LENGTH_SHORT).show();
         Log.i(TAG, "onFormCompleted: Called");
-        setupViewPager(mViewPager);
         //TODO store / update user answers to new table in db - dissonance.db
         db.updateDissonance();
         Toast.makeText(this, "Results successfully stored.", Toast.LENGTH_SHORT).show();
-
+        Intent intent = new Intent(this, MainActivity.class); //get out of welcome and back to home
+        startActivity(intent);
     }
-
     /*
  Method is linked to profileformfragment as an interface.
   */
@@ -380,7 +393,7 @@ ProfileFragment.onProfileCompleteListener {
     protected void onPause() {
         super.onPause();
         Log.e("Main Activity", "onPause");
-        //when user pauses app, check if daily goal is reached.
+        runNotifications(mContext);
         goalCompletion.goalReached(db);
     }
 

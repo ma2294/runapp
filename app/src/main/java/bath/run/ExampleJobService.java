@@ -1,10 +1,14 @@
 package bath.run;
 
+import android.app.Activity;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.content.Context;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+
+import bath.run.fragments.DissonanceFormFragment;
 
 /**
  * Created by mradl on 08/07/2018.
@@ -14,8 +18,11 @@ public class ExampleJobService extends JobService {
     private static final String TAG = "ExampleJobService";
     private boolean jobcancelled = false;
     MainActivity mainActivity = new MainActivity();
+    NotificationHelper notificationHelper;
 
+    private Context context;
     //TODO remove above call and make mainactivity singleton if this causes problems.
+
 
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
@@ -26,17 +33,26 @@ public class ExampleJobService extends JobService {
 
     private void doBackgroundWork(final JobParameters jobParameters) {
         new Thread(new Runnable() {
+
             @Override
             public void run() {
+                Log.e(TAG, "run: ...... ");
                 if (jobcancelled) {
                     return; //leave immediately.
                 }
+                //TODO better implement tes() and setsteps() without reinstantiating main
+                //mainActivity.runNotifications(context);
+                context = MainActivity.mContext;
+                notificationHelper = new NotificationHelper(context);
+                notificationHelper.createNotificationChannel();
+                notificationHelper.pushNotification();
                 mainActivity.setSteps();
-                Log.i(TAG, "run: Job Finished");
+                Log.e(TAG, "run: Job Finished");
                 jobFinished(jobParameters, false);
             }
         }).start();
     }
+
 
     @Override
     public boolean onStopJob(JobParameters jobParameters) {

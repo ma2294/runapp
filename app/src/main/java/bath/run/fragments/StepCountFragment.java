@@ -59,7 +59,6 @@ public class StepCountFragment extends Fragment {
         total = GoalCompletion.workOutRemainingPercentage(stepsModel.getDailysteps(), stepsModel.getDailyStepsGoal());
         Log.d(TAG, "onCreateView: started..");
 
-
         return view;
     }
 

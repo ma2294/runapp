@@ -31,4 +31,13 @@
         <item name="overlapAnchor">false</item>
     </style>
 
+    <style name="ButtonBorder" parent="Widget.AppCompat.Button.Colored"/>
+
+    <style name="ButtonBorder.Accent">
+        <item name="android:background">@drawable/rectangle_custombutton</item>
+        <item name="android:textColor">@color/runBlue</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:singleLine">true</item>
+    </style>
 </resources>

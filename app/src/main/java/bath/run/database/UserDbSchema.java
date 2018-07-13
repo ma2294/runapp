@@ -14,7 +14,7 @@ public class UserDbSchema {
 
         public static final String USER_DISSONANCE_ENTRIES =
                 "CREATE TABLE "
-                        + TABLE_NAME_DISSONANCE + "(question1 INTEGER, question2 INTEGER, question3 INTEGER)";
+                        + TABLE_NAME_DISSONANCE + "(question1 INTEGER, question2 INTEGER, question3 INTEGER, answered boolean)";
 
         public static final String USER_PROFILE_ENTRIES =
                 "CREATE TABLE "

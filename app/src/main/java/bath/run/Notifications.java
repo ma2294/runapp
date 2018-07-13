@@ -32,4 +32,16 @@ public class Notifications {
     public static final class highAverage {
         public static final String HIGH_TEST = "Testing, 1,2 3...";
     }
+
+    //Where is is no dissonance and the user is not competitive (in response to questionnaire).
+    public static final class lowCompetitiveness {
+        public static final String LOW_STRING = "You are doing amazing keep up the great work!";
+        public static final String LOW_STRING_TWO = "You are on track with meeting your fitness targets.";
+    }
+    //Where there is no dissonance and the user is competitive (in response to questionnaire.
+    public static final class highCompetitiveness {
+        public static final String HIGH_STRING = "You are in the top 10% of our users!";
+        public static final String HIGH_STRING_TWO = "Today, you have travelled the most distance" +
+                "out of all of our users.";
+    }
 }

@@ -5,6 +5,7 @@ public class DissonanceFormModel {
     private int care = 0;
     private int frequency = 0;
     private int competitiveness = 0;
+    private boolean answered = false;
 
     private DissonanceFormModel() {
 
@@ -52,6 +53,14 @@ public class DissonanceFormModel {
 
     @Override
     public String toString() {
-        return "Care: " + getCare() + ". Frequency: " + getFrequency() + ". Competitiveness: " + getCompetitiveness();
+        return "Care: " + getCare() + ". Frequency: " + getFrequency() + ". Competitiveness: " + getCompetitiveness()+ ". Is answered? "+isAnswered();
+    }
+
+    public boolean isAnswered() {
+        return answered;
+    }
+
+    public void setAnswered(boolean answered) {
+        this.answered = answered;
     }
 }

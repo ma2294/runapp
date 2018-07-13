@@ -19,7 +19,7 @@ import bath.run.database.UserDbSchema.UserTable;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final int VERSION = 2;
+    private static final int VERSION = 1;
     private static final String TABLE_NAME_USER = "user";
     private static final String TABLE_NAME_PROFILE = "profile";
     private static final String DATABASE_NAME = "user.db";
@@ -94,9 +94,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int one = cursor.getInt(0);
             int two = cursor.getInt(1);
             int three = cursor.getInt(2);
+            boolean four = cursor.getInt(3) > 0;
             dissonanceFormModel.setCare(one);
             dissonanceFormModel.setFrequency(two);
             dissonanceFormModel.setCompetitiveness(three);
+            dissonanceFormModel.setAnswered(four);
             Log.i(TAG, "pullFromDissonanceDb: "+dissonanceFormModel.toString());
         } finally {
             cursor.close();
@@ -104,13 +106,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     //Query db where date = current date. Sets booleans to current column values. Sets this to user.
     public void pullFromDb() {
-        System.out.println("get users called");
         Cursor cursor = queryUser(whereUserTable, whereArgsUserTable, "user");
         try {
             cursor.moveToFirst();
 
             while (!cursor.isAfterLast()) {
-                System.out.println("while..");
                 int weekCol = cursor.getInt(0);
                 System.out.println(weekCol);
                 boolean monday = cursor.getInt(1) > 0;
@@ -193,7 +193,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("question1", dissonanceFormModel.getCare());
         contentValues.put("question2", dissonanceFormModel.getFrequency());
         contentValues.put("question3", dissonanceFormModel.getCompetitiveness());
-
+        contentValues.put("answered", dissonanceFormModel.isAnswered() ? 1 : 0);
         db.update("dissonance", contentValues, null,null);
     }
 
@@ -233,6 +233,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(UserTable.DissonanceCols.Q1, dissonanceFormModel.getCare());
         contentValues.put(UserTable.DissonanceCols.Q2, dissonanceFormModel.getFrequency());
         contentValues.put(UserTable.DissonanceCols.Q3, dissonanceFormModel.getCompetitiveness());
+        contentValues.put("answered", dissonanceFormModel.isAnswered() ? 1 : 0);
 
         db.insert("dissonance", null, contentValues);
     }

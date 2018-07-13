@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="70dp"
+    android:paddingBottom="65dp"
     android:background="@color/black">
 
     <ImageView
@@ -151,13 +151,13 @@
 
     <Button
         android:id="@+id/btnUpdateDissonanceForm"
-        android:layout_width="wrap_content"
+        android:layout_width="175dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="44dp"
         android:text="Submit"
-        android:background="@color/runBlue"
+        style="@style/ButtonBorder.Accent"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

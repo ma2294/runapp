@@ -23,7 +23,6 @@ public class GoalCompletion {
         return total;
     }
 
-
     public void goalReached(DatabaseHelper db) {
         int day = dotw.getDay();
         if (stepsModel.getDailysteps()>= stepsModel.getDailyStepsGoal()) {

@@ -1,4 +1,4 @@
-package bath.run.fragments;
+package bath.run.fragments.Landing_page;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -19,9 +19,9 @@ import bath.run.R;
  */
 
 
-public class DissonanceFormFragment extends Fragment {
+public class WelcomeDissonanceFragment extends Fragment {
 
-    private static final String TAG = "DissonanceFormFragment";
+    private static final String TAG = "WelcomeDissonance";
     onFormCompletionListener mCallback;
     DissonanceFormModel dissonanceFormModel = DissonanceFormModel.getInstance();
     private Button btnUpdate;
@@ -32,7 +32,7 @@ public class DissonanceFormFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dissonance_form, container, false);
+        View view = inflater.inflate(R.layout.welcome_dissonance_form, container, false);
         Log.i(TAG, "onCreateView: Dissonance fragment");
 
         btnUpdate = (Button) view.findViewById(R.id.btnUpdateDissonanceForm);
