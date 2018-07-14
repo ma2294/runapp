@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
 
 
     <ProgressBar
@@ -11,13 +11,32 @@
         style="?android:progressBarStyleHorizontal"
         android:layout_width="175dp"
         android:layout_height="175dp"
-        android:layout_marginTop="85dp"
+        android:layout_marginTop="135dp"
+        android:elevation="2dp"
         android:gravity="center"
-        android:progress="70"
+        android:progress="0"
         android:progressDrawable="@drawable/circle_calories"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />s
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progressBarTransparent"
+        style="?android:progressBarStyleHorizontal"
+        android:layout_width="175dp"
+        android:layout_height="175dp"
+
+        android:progress="100"
+        android:progressDrawable="@drawable/circle_transparent"
+        app:layout_constraintTop_toTopOf="@+id/progressBarDailyCalories"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/progressBarDailyCalories"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintVertical_bias="0.5"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="@+id/progressBarDailyCalories"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="@+id/progressBarDailyCalories"/>
 
     <TextView
         android:id="@+id/tvDailyCaloriesPercentage"
@@ -25,7 +44,7 @@
         android:layout_height="35dp"
         android:layout_marginBottom="88dp"
         android:gravity="center"
-        android:text="150"
+        android:text="..."
         android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/progressBarDailyCalories"
@@ -37,14 +56,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Calories burnt"
+        android:text="Daily calories expended"
         android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.11" />
+        app:layout_constraintVertical_bias="0.166" />
 
     <TextView
         android:id="@+id/tvDailyCalories"
@@ -52,25 +74,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:gravity="center"
-        android:text="/3000s"
+        android:text="Updating.."
         android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvDailyCaloriesPercentage" />
-
-    <TextView
-        android:id="@+id/tvMotivationalMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="152dp"
-        android:gravity="center"
-        android:text="While you sleep your rivals are awake,\n making great innovations"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

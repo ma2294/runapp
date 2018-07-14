@@ -97,5 +97,17 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/circle_daily_streak"
+        android:text=".."
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="@+id/progressBarTransparent"
+        app:layout_constraintTop_toTopOf="@+id/progressBarTransparent" />
+
 
 </android.support.constraint.ConstraintLayout>

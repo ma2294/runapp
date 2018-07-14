@@ -271,9 +271,9 @@ ProfileFragment.onProfileCompleteListener, WelcomeDissonanceFragment.onFormCompl
         FormStatePagerAdapter adapter = new FormStatePagerAdapter(getSupportFragmentManager());
 
         adapter.addFragment(new StepCountFragment(), "Steps");
-        adapter.addFragment(new HeartRateFragment(), "Heartrate");
+        adapter.addFragment(new CalorieFragment(), "Calorie");
         adapter.addFragment(new DistanceFragment(), "Distance");
-        adapter.addFragment(new CalorieFragment(), "Calories");
+        adapter.addFragment(new HeartRateFragment(), "Calories");
         viewPager.setAdapter(adapter);
     }
 
