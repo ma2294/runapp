@@ -6,88 +6,106 @@ package bath.run.database;
  */
 
 public class User {
-    private static int week;
-    private static boolean monday = false;
-    private static boolean tuesday = false;
-    private static boolean wednesday = false;
-    private static boolean thursday = false;
-    private static boolean friday = false;
-    private static boolean saturday = false;
-    private static boolean sunday = false;
+    private static User instance = null;
+    private int week = 0;
+    private boolean monday = false;
+    private boolean tuesday = false;
+    private boolean wednesday = false;
+    private boolean thursday = false;
+    private boolean friday = false;
+    private boolean saturday = false;
+    private boolean sunday = false;
+    private int streak = 0;
+    private int yesterdayStreak = 0;
+    private int currentday = 0;
+    private int lastday = 0;
 
-    public User() {
-        //  System.out.println("test");
+
+    private User(){
+
     }
 
-    public User(int weekNum) {
-        week = weekNum;
+    public static User getInstance(){
+        if (instance == null) {
+           instance = new User();
+        }
+        return instance;
     }
 
-    public static void setWeek(int weekk) {
-        week = weekk;
+    public void setWeek(int week) {
+        this.week = week;
     }
 
-    public static void setMonday(boolean mondayy) {
-        monday = mondayy;
-    }
-
-    public static void setTuesday(boolean tuesdayy) {
-        tuesday = tuesdayy;
-    }
-
-    public static void setWednesday(boolean wednesdayy) {
-        wednesday = wednesdayy;
-    }
-
-    public static void setThursday(boolean thursdayy) {
-        thursday = thursdayy;
-    }
-
-    public static void setFriday(boolean fridayy) {
-        friday = fridayy;
-    }
-
-    public static void setSaturday(boolean saturdayy) {
-        saturday = saturdayy;
-    }
-
-    public static void setSunday(boolean sundayy) {
-        sunday = sundayy;
-    }
-
-    public static boolean isMonday() {
-        return monday;
-    }
-
-    public static boolean isTuesday() {
-        return tuesday;
-    }
-
-    public static boolean isWednesday() {
-        return wednesday;
-    }
-
-    public static boolean isThursday() {
-        return thursday;
-    }
-
-    public static boolean isFriday() {
-        return friday;
-    }
-
-    public static boolean isSaturday() {
-        return saturday;
-    }
-
-    public static boolean isSunday() {
-        return sunday;
-    }
-
-    public static int getWeek() {
+    public int getWeek() {
         return week;
     }
 
-    public static void setDay(boolean stepsComplete, int day) {
+    public boolean isMonday() {
+        return monday;
+    }
+
+    public void setMonday(boolean monday) {
+        this.monday = monday;
+    }
+
+    public boolean isTuesday() {
+        return tuesday;
+    }
+
+    public void setTuesday(boolean tuesday) {
+        this.tuesday = tuesday;
+    }
+
+    public boolean isWednesday() {
+        return wednesday;
+    }
+
+    public void setWednesday(boolean wednesday) {
+        this.wednesday = wednesday;
+    }
+
+    public boolean isThursday() {
+        return thursday;
+    }
+
+    public void setThursday(boolean thursday) {
+        this.thursday = thursday;
+    }
+
+    public boolean isFriday() {
+        return friday;
+    }
+
+    public void setFriday(boolean friday) {
+        this.friday = friday;
+    }
+
+    public boolean isSaturday() {
+        return saturday;
+    }
+
+    public void setSaturday(boolean saturday) {
+        this.saturday = saturday;
+    }
+
+    public boolean isSunday() {
+        return sunday;
+    }
+
+    public void setSunday(boolean sunday) {
+        this.sunday = sunday;
+    }
+
+    public int getStreak() {
+        return streak;
+    }
+
+    public void setStreak(int streak) {
+        this.streak = streak;
+    }
+
+
+    public void setDay(boolean stepsComplete, int day) {
         switch (day) {
             case 1:
                 setMonday(stepsComplete);
@@ -123,6 +141,16 @@ public class User {
         }
     }
 
+
+
+    public int getLastday() {
+        return lastday;
+    }
+
+    public void setLastday(int lastday) {
+        this.lastday = lastday;
+    }
+
     @Override
     public String toString() {
         return "Monday steps: "
@@ -134,4 +162,5 @@ public class User {
                 + isSaturday() + ". Sunday steps: "
                 + isSunday() + ". Week of year: " + getWeek();
     }
+
 }

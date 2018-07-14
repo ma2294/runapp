@@ -26,6 +26,9 @@ public class DayOfTheWeekModel {
 
         return sCalendar.get(Calendar.WEEK_OF_YEAR);
     }
+    public int getCurrentDay(){
+        return sCalendar.DAY_OF_YEAR;
+    }
       public int getDay(){
         today = sCalendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault());
         switch (today) {

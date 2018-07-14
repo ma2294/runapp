@@ -27,6 +27,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     DissonanceFormModel dissonanceFormModel = DissonanceFormModel.getInstance();
     UserProfileModel userProfileModel = UserProfileModel.getInstance();
     DayOfTheWeekModel dotw = new DayOfTheWeekModel();
+    User user = User.getInstance();
     private SQLiteDatabase mDatabase;
     private String whereUserTable = "week = ?";
     private String[] whereArgsUserTable = new String[]{
@@ -79,10 +80,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int weight = cursor.getInt(1);
             int height = cursor.getInt(2);
             int weightPrompt = cursor.getInt(3);
+            int streak = cursor.getInt(4);
+            int lastday = cursor.getInt(5);
+
             userProfileModel.setName(name);
             userProfileModel.setWeight(weight);
             userProfileModel.setHeight(height);
             userProfileModel.setWeightPrompt(weightPrompt);
+            user.setStreak(streak);
+            user.setLastday(lastday);
         } finally {
             cursor.close();
         }
@@ -121,14 +127,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 boolean saturday = cursor.getInt(6) > 0;
                 boolean sunday = cursor.getInt(7) > 0;
 
-                User.setMonday(monday);
-                User.setTuesday(tuesday);
-                User.setWednesday(wednesday);
-                User.setThursday(thursday);
-                User.setFriday(friday);
-                User.setSaturday(saturday);
-                User.setSunday(sunday);
-
+                user.setMonday(monday);
+                user.setTuesday(tuesday);
+                user.setWednesday(wednesday);
+                user.setThursday(thursday);
+                user.setFriday(friday);
+                user.setSaturday(saturday);
+                user.setSunday(sunday);
                 cursor.moveToNext();
             }
         } finally {
@@ -143,37 +148,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         switch (day) {
             case 1:
-                contentValues.put("monday", User.isMonday() ? 1 : 0);
+                contentValues.put("monday", user.isMonday() ? 1 : 0);
                 Log.i(TAG, "updateRow: Monday. ");
                 break;
 
             case 2:
-                contentValues.put("tuesday", User.isTuesday() ? 1 : 0);
+                contentValues.put("tuesday", user.isTuesday() ? 1 : 0);
                 Log.i(TAG, "updateRow: Tuesday = Yes ");
                 break;
 
             case 3:
-                contentValues.put("wednesday", User.isWednesday() ? 1 : 0);
+                contentValues.put("wednesday", user.isWednesday() ? 1 : 0);
                 Log.i(TAG, "updateRow: Wednesday = Yes ");
                 break;
 
             case 4:
-                contentValues.put("thursday", User.isThursday() ? 1 : 0);
+                contentValues.put("thursday", user.isThursday() ? 1 : 0);
                 Log.i(TAG, "updateRow: Thursday = Yes ");
                 break;
 
             case 5:
-                contentValues.put("friday", User.isFriday() ? 1 : 0);
+                contentValues.put("friday", user.isFriday() ? 1 : 0);
                 Log.i(TAG, "updateRow: Friday = Yes ");
                 break;
 
             case 6:
-                contentValues.put("saturday", User.isSaturday() ? 1 : 0);
+                contentValues.put("saturday", user.isSaturday() ? 1 : 0);
                 Log.i(TAG, "updateRow: Saturday = Yes ");
                 break;
 
             case 7:
-                contentValues.put("sunday", User.isSunday() ? 1 : 0);
+                contentValues.put("sunday", user.isSunday() ? 1 : 0);
                 Log.i(TAG, "updateRow: Sunday ");
                 break;
 
@@ -206,6 +211,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("weight", userProfileModel.getWeight());
         contentValues.put("height", userProfileModel.getHeight());
         contentValues.put("weightprompt", userProfileModel.getWeightPrompt());
+        contentValues.put("streak", user.getStreak());
+        contentValues.put("lastday", user.getLastday());
+        System.out.println("streak "+user.getStreak()+ ". lastday "+user.getLastday());
         db.update(TABLE_NAME_PROFILE, contentValues, null,null);
     }
     //insert into db
@@ -213,7 +221,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void insert(SQLiteDatabase db)
             throws SQLException {
         ContentValues contentValues = new ContentValues();
-        User user = new User();
         contentValues.put("week", dotw.getWeek());
         contentValues.put("monday", user.isMonday() ? 1 : 0);
         contentValues.put("tuesday", user.isTuesday() ? 1 : 0);
@@ -244,6 +251,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("weight", userProfileModel.getWeight());
         contentValues.put("height", userProfileModel.getHeight());
         contentValues.put("weightprompt", userProfileModel.getWeightPrompt());
+        contentValues.put("streak", user.getStreak());
+        contentValues.put("lastday", user.getLastday());
 
         db.insert("profile", null, contentValues);
     }

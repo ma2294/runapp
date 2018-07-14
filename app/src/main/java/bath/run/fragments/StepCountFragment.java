@@ -8,9 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import bath.run.database.User;
 import bath.run.model.GoalCompletion;
 import bath.run.MainActivity;
 import bath.run.model.MotivationalMessages;
@@ -26,12 +28,14 @@ public class StepCountFragment extends Fragment {
     final Handler handler = new Handler();
     MotivationalMessages mm = new MotivationalMessages();
     StepsModel stepsModel = StepsModel.getInstance();
+    User user = User.getInstance();
     double total = 0;
     int progress = 0;
     private final int delayMillis = 5000;
     private TextView tvDailyStepsPercentage;
     private TextView tvDailySteps;
     private TextView tvMotivationalMessage;
+    private Button btnStreak;
     private ProgressBar progressBarDailySteps;
     public Runnable uiUpdater = new Runnable() {
         @Override
@@ -41,6 +45,7 @@ public class StepCountFragment extends Fragment {
             progress = ((int) total);
             tvDailyStepsPercentage.setText(String.valueOf(progress) + "%");
             progressBarDailySteps.setProgress(progress);
+            btnStreak.setText(String.valueOf(user.getStreak()));
             handler.postDelayed(uiUpdater, delayMillis);
         }
     };
@@ -55,8 +60,10 @@ public class StepCountFragment extends Fragment {
         tvDailyStepsPercentage = (TextView) view.findViewById(R.id.tvDailyCaloriesPercentage);
         progressBarDailySteps = (ProgressBar) view.findViewById(R.id.progressBarDailyCalories);
         tvMotivationalMessage = (TextView) view.findViewById(R.id.tvMotivationalMessage);
+        btnStreak = (Button) view.findViewById(R.id.btnStreak);
         tvMotivationalMessage.setText(mm.getMotivationalMessage());
         total = GoalCompletion.workOutRemainingPercentage(stepsModel.getDailysteps(), stepsModel.getDailyStepsGoal());
+        btnStreak.setText(String.valueOf(user.getStreak()));
         Log.d(TAG, "onCreateView: started..");
 
         return view;

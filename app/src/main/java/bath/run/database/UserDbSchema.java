@@ -18,7 +18,7 @@ public class UserDbSchema {
 
         public static final String USER_PROFILE_ENTRIES =
                 "CREATE TABLE "
-                        + TABLE_NAME_PROFILE + "(name TEXT, weight INTEGER, height INTEGER, weightprompt INTEGER)";
+                        + TABLE_NAME_PROFILE + "(name TEXT, weight INTEGER, height INTEGER, weightprompt INTEGER, streak INTEGER, lastday INTEGER)";
 
         public static final String SQL_CREATE_ENTRIES =
                 "CREATE TABLE "
@@ -41,7 +41,7 @@ public class UserDbSchema {
             public static final String FRIDAY = "friday";
             public static final String SATURDAY = "saturday";
             public static final String SUNDAY = "sunday";
-        }
+          }
 
         public static final class DissonanceCols {
             public static final String Q1 = "question1";

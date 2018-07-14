@@ -53,16 +53,17 @@ public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener
         , DissonanceFormFragment.onFormCompletionListener,
-ProfileFragment.onProfileCompleteListener, WelcomeDissonanceFragment.onFormCompletionListener {
+        ProfileFragment.onProfileCompleteListener, WelcomeDissonanceFragment.onFormCompletionListener {
 
     static final int JOB_ID = 1;
     private static final String TAG = "l";
     public static GoogleApiClient mGoogleApiClient;
+    public static Context mContext;
     Toolbar toolbar;
     GoalCompletion goalCompletion = new GoalCompletion();
     DayOfTheWeekModel dotw = new DayOfTheWeekModel();
     DatabaseHelper db = new DatabaseHelper(this);
-
+    User user = User.getInstance();
     DissonanceFormModel dissonanceFormModel = DissonanceFormModel.getInstance();
     StepsModel stepsModel = StepsModel.getInstance();
     private FormStatePagerAdapter mFormStatePagerAdapter;
@@ -76,9 +77,22 @@ ProfileFragment.onProfileCompleteListener, WelcomeDissonanceFragment.onFormCompl
     private ImageView imgFri;
     private ImageView imgSat;
     private ImageView imgSun;
-    public static Context mContext;
 
-//TODO add third fragment layout to starter screen where user can customise login screen through selecting the type of scenery they desire. I.e. what bg image to use.
+    public static boolean isJobServiceOn(Context context) {
+        JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+        boolean hasBeenScheduled = false;
+
+        for (JobInfo jobInfo : scheduler.getAllPendingJobs()) {
+            if (jobInfo.getId() == JOB_ID) {
+                hasBeenScheduled = true;
+                break;
+            }
+        }
+        return hasBeenScheduled;
+    }
+
+    //TODO add third fragment layout to starter screen where user can customise login screen through selecting the type of scenery they desire. I.e. what bg image to use.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,21 +125,6 @@ ProfileFragment.onProfileCompleteListener, WelcomeDissonanceFragment.onFormCompl
         notificationHelper.createNotificationChannel();
         notificationHelper.pushNotification();
     }
-
-    public static boolean isJobServiceOn(Context context) {
-        JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-
-        boolean hasBeenScheduled = false;
-
-        for (JobInfo jobInfo : scheduler.getAllPendingJobs()) {
-            if (jobInfo.getId() == JOB_ID) {
-                hasBeenScheduled = true;
-                break;
-            }
-        }
-        return hasBeenScheduled;
-    }
-
 
     public void setSteps() {
         if (mGoogleApiClient.isConnected()) {
@@ -168,7 +167,7 @@ ProfileFragment.onProfileCompleteListener, WelcomeDissonanceFragment.onFormCompl
         setDayTextView();
 
         //Has user visited before? If yes continue, if no open welcome screen and dissonance form.
-        if(!dissonanceFormModel.isAnswered()) {
+        if (!dissonanceFormModel.isAnswered()) {
             //TODO force open dissonance form
             Log.e(TAG, "onResume: USER MUST FILL IN FORM");
             setupWelcomePager(mViewPagerWelcome);
@@ -330,37 +329,37 @@ ProfileFragment.onProfileCompleteListener, WelcomeDissonanceFragment.onFormCompl
     }
 
     public void setDayTextView() {
-        if (User.isMonday()) {
+        if (user.isMonday()) {
             imgMon.setImageResource(R.drawable.tickicon);
         } else {
             imgMon.setImageResource(R.drawable.crossicon);
         }
-        if (User.isTuesday()) {
+        if (user.isTuesday()) {
             imgTue.setImageResource(R.drawable.tickicon);
         } else {
             imgTue.setImageResource(R.drawable.crossicon);
         }
-        if (User.isWednesday()) {
+        if (user.isWednesday()) {
             imgWed.setImageResource(R.drawable.tickicon);
         } else {
             imgWed.setImageResource(R.drawable.crossicon);
         }
-        if (User.isThursday()) {
+        if (user.isThursday()) {
             imgThu.setImageResource(R.drawable.tickicon);
         } else {
             imgThu.setImageResource(R.drawable.crossicon);
         }
-        if (User.isFriday()) {
+        if (user.isFriday()) {
             imgFri.setImageResource(R.drawable.tickicon);
         } else {
             imgFri.setImageResource(R.drawable.crossicon);
         }
-        if (User.isSaturday()) {
+        if (user.isSaturday()) {
             imgSat.setImageResource(R.drawable.tickicon);
         } else {
             imgSat.setImageResource(R.drawable.crossicon);
         }
-        if (User.isSunday()) {
+        if (user.isSunday()) {
             imgSun.setImageResource(R.drawable.tickicon);
         } else {
             imgSun.setImageResource(R.drawable.crossicon);
@@ -378,6 +377,7 @@ ProfileFragment.onProfileCompleteListener, WelcomeDissonanceFragment.onFormCompl
         Intent intent = new Intent(this, MainActivity.class); //get out of welcome and back to home
         startActivity(intent);
     }
+
     /*
  Method is linked to profileformfragment as an interface.
   */
@@ -389,6 +389,7 @@ ProfileFragment.onProfileCompleteListener, WelcomeDissonanceFragment.onFormCompl
         Toast.makeText(this, "Results successfully stored.", Toast.LENGTH_SHORT).show();
 
     }
+
     @Override
     protected void onPause() {
         super.onPause();
