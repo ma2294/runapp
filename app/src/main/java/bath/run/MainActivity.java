@@ -41,6 +41,7 @@ import bath.run.fragments.HeartRateFragment;
 import bath.run.fragments.Landing_page.WelcomeGoalFragment;
 import bath.run.fragments.Landing_page.WelcomeLandingFragment;
 import bath.run.fragments.ProfileFragment;
+import bath.run.fragments.SettingsFormFragment;
 import bath.run.fragments.StepCountFragment;
 import bath.run.fragments.Landing_page.WelcomeDissonanceFragment;
 import bath.run.model.DayOfTheWeekModel;
@@ -134,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements
         db.pullFromProfileDb();
         setDayTextView();
 
+        user.setStreak(5);
         //Has user visited before? If yes continue, if no open welcome screen and dissonance form.
         if (!dissonanceFormModel.isAnswered()) {
             setupWelcomePager(mViewPagerWelcome);
@@ -268,6 +270,9 @@ public class MainActivity extends AppCompatActivity implements
                     case R.id.action_custom:
                         setupDissonancePager(mViewPager);
                         //Todo add cases for remaining nav items.
+                        break;
+                    case R.id.action_settings:
+                        setupSettingsPager(mViewPager);
                 }
                 return true;
             }
@@ -365,6 +370,12 @@ public class MainActivity extends AppCompatActivity implements
     private void setupDissonancePager(ViewPager viewPager) {
         FormStatePagerAdapter adapter = new FormStatePagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new DissonanceFormFragment(), "Dissonance Form Fragment");
+        viewPager.setAdapter(adapter);
+    }
+
+    private void setupSettingsPager(ViewPager viewPager) {
+        FormStatePagerAdapter adapter = new FormStatePagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new SettingsFormFragment(), "Settings Form Fragment");
         viewPager.setAdapter(adapter);
     }
 

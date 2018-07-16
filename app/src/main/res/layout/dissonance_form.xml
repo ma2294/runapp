@@ -4,16 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
     android:paddingBottom="57dp"
     tools:layout_editor_absoluteY="25dp">
 
     <ImageView
-        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:alpha=".35"
-        android:background="@drawable/test" />
+        android:alpha=".75"
+        android:background="@color/black" />
 
     <ScrollView
         android:layout_width="match_parent"

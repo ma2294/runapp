@@ -2,12 +2,16 @@ package bath.run.model;
 
 import android.util.Log;
 
+import bath.run.database.User;
+
 public class NotificationModel {
-    private static final String TAG = "NotificationModel";
-    UserProfileModel userProfileModel = UserProfileModel.getInstance();
     public static final int ID_DISSONANCE = 0;
     public static final int ID_NO_DISSONANCE = 1;
     public static final int ID_GOAL_COMPLETE = 2;
+    private static final String TAG = "NotificationModel";
+    UserProfileModel userProfileModel = UserProfileModel.getInstance();
+    User user = User.getInstance();
+    StepsModel stepsModel = StepsModel.getInstance();
     private String response = "";
 
     //Individual who is considered as : LOW in terms of exercise.
@@ -41,6 +45,10 @@ public class NotificationModel {
 
     private String userHighMild = "Planning to run today? Why not get it over and done with!";
     private String userHighMild2 = "Why not try some morning stretches? Athletes often perform these to enhance their exercise.";
+
+    private String completeSteps = "Woo! Your streak has increased to " + user.getStreak() + ".";
+    private String completeSteps2 = "With taking that final step you have reached your daily step goal!";
+    private String completeSteps3 = stepsModel.getDailyStepsGoal() + " steps? " + " Completed.";
 
     public String lowUserUrgent(int value) {
         switch (value) {
@@ -294,4 +302,22 @@ public class NotificationModel {
         return response;
     }
 
+    public String goalReached(int value) {
+        switch (value) {
+            case 1:
+                response = completeSteps;
+                break;
+
+            case 2:
+                response = completeSteps2;
+                break;
+            case 3:
+                response = completeSteps3;
+                break;
+
+            default:
+                //
+        }
+        return response;
+    }
 }

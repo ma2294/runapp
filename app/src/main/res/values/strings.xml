@@ -38,6 +38,9 @@
 
     <string name="weight_prompt">choose a time</string>
     <string name="disclaimer">Please note: This information IS REQUIRED to provide an accurate estimate of your daily calories expended. This data will not be used for any other purpose.</string>
+    <string name="txtViewtimeRange">What times of day do you wish to receive notifications?</string>
+    <string name="radioStaticTimeRange">Notify me whenever</string>
+    <string name="radioTailoredTimeRange">Notify me ebtween 8 am to 5 pm</string>
     <string-array name="weight_array">
         <item>Daily</item>
         <item>Weekly</item>

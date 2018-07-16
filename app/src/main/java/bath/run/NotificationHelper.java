@@ -38,6 +38,10 @@ public class NotificationHelper {
     boolean userProgress = stepsModel.getDailyStepsGoal() - stepsModel.getDailysteps() > stepsModel.getDailysteps() * 0.5;
     String response = "";
     private Context mContext;
+    int notificationId = 0;
+
+    String s = "";
+    int remaining = stepsModel.getDailyStepsGoal() - stepsModel.getDailysteps();
 
     public NotificationHelper(Context mContext) {
         this.mContext = mContext;
@@ -82,16 +86,15 @@ public class NotificationHelper {
                     time passed     24
              */
 
-    public void pushNotification() {
+    public void pushScheduledNotification() {
         int total = dissonanceFormModel.getAvg();
-        String s = "";
-        int remaining = stepsModel.getDailyStepsGoal() - stepsModel.getDailysteps();
-        int notificationId = 0;
 
         if (remaining < 0) {
             remaining = 0;
         }
 
+        if(userInRange()){
+            Log.e(TAG, "pushScheduledNotification: USER IN RANGE "+dotw.getHour());
         Bitmap largeIcon = BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.question);
         if (workDissonance(stepsModel.getDailysteps(), dotw.getHour(), stepsModel.getDailyStepsGoal(), dotw.HOURS_IN_DAY)) {
             int t = dotw.HOURS_IN_DAY - dotw.getHour();
@@ -118,6 +121,31 @@ public class NotificationHelper {
                 largeIcon = BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.winner);
             }
             notificationId = NotificationModel.ID_NO_DISSONANCE; // no dissonance id
+        }
+        sendNotification(s, largeIcon, remaining, notificationId);
+    } else {
+            Log.e(TAG, "pushScheduledNotification: USER NOT IN RANGE "+dotw.getHour());
+        }
+    }
+
+    private boolean userInRange() {
+        //TODO set these values in DB and Pull from them in Model class.
+        int boundaryStart = 8;
+        int boundaryFinish = 22;
+
+        if(dotw.getHour() >= boundaryStart && dotw.getHour() <= boundaryFinish) {
+            return true;
+        } else{
+            return  false;
+        }
+    }
+
+    public void pushGoalReachedNotification() {
+        s = notificationModel.goalReached(MotivationalMessages.getRandomNumberInRange(1,3));
+        Bitmap largeIcon = BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.fireworks);
+        notificationId =  NotificationModel.ID_GOAL_COMPLETE;
+        if(remaining < 0){
+            remaining = 0;
         }
         sendNotification(s, largeIcon, remaining, notificationId);
     }
@@ -159,20 +187,21 @@ public class NotificationHelper {
             case 1:
             case 2:
             case 3:
+                return BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.question);
             case 4:
             case 5:
             case 6:
-                return BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.question);
+                return BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.muscle);
             case 7:
             case 8:
             case 9:
+                return BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.medal);
             case 10:
-                return BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.fire);
             case 11:
             case 12:
             case 13:
             case 14:
-                return BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.medal);
+                return BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.run);
 
             default:
                 return BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.run);

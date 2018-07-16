@@ -49,6 +49,7 @@ public class GoalCompletion {
             user.setStreak(user.getStreak() + 1);
             db.updateStepGoal();
             db.updateProfile(2);
+
             user.setDay(true, day);
             for (int i = 0; i <= dotw.DAYS_IN_WEEK; i++) {
                 if (day == i) {

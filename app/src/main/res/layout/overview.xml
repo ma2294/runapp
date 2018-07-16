@@ -25,7 +25,6 @@
         style="?android:progressBarStyleHorizontal"
         android:layout_width="175dp"
         android:layout_height="175dp"
-
         android:progress="100"
         android:progressDrawable="@drawable/circle_transparent"
         app:layout_constraintTop_toTopOf="@+id/progressBarDailyCalories"
