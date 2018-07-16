@@ -5,6 +5,9 @@ import android.util.Log;
 public class NotificationModel {
     private static final String TAG = "NotificationModel";
     UserProfileModel userProfileModel = UserProfileModel.getInstance();
+    public static final int ID_DISSONANCE = 0;
+    public static final int ID_NO_DISSONANCE = 1;
+    public static final int ID_GOAL_COMPLETE = 2;
     private String response = "";
 
     //Individual who is considered as : LOW in terms of exercise.

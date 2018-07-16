@@ -38,6 +38,7 @@ import bath.run.fragments.DissonanceFormFragment;
 import bath.run.fragments.DistanceFragment;
 import bath.run.fragments.FormStatePagerAdapter;
 import bath.run.fragments.HeartRateFragment;
+import bath.run.fragments.Landing_page.WelcomeGoalFragment;
 import bath.run.fragments.Landing_page.WelcomeLandingFragment;
 import bath.run.fragments.ProfileFragment;
 import bath.run.fragments.StepCountFragment;
@@ -45,6 +46,7 @@ import bath.run.fragments.Landing_page.WelcomeDissonanceFragment;
 import bath.run.model.DayOfTheWeekModel;
 import bath.run.model.DissonanceFormModel;
 import bath.run.model.GoalCompletion;
+import bath.run.model.JobModel;
 import bath.run.model.StepsModel;
 
 
@@ -53,13 +55,12 @@ public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener
         , DissonanceFormFragment.onFormCompletionListener,
-        ProfileFragment.onProfileCompleteListener, WelcomeDissonanceFragment.onFormCompletionListener {
+        ProfileFragment.onProfileCompleteListener, WelcomeDissonanceFragment.onFormCompletionListener,
+        WelcomeGoalFragment.onStepGoalCompletionListener {
 
-    static final int JOB_ID = 1;
-    private static final String TAG = "l";
+    private static final String TAG = "Main";
     public static GoogleApiClient mGoogleApiClient;
     public static Context mContext;
-    Toolbar toolbar;
     GoalCompletion goalCompletion = new GoalCompletion();
     DayOfTheWeekModel dotw = new DayOfTheWeekModel();
     DatabaseHelper db = new DatabaseHelper(this);
@@ -67,8 +68,8 @@ public class MainActivity extends AppCompatActivity implements
     DissonanceFormModel dissonanceFormModel = DissonanceFormModel.getInstance();
     StepsModel stepsModel = StepsModel.getInstance();
     private FormStatePagerAdapter mFormStatePagerAdapter;
+    private Toolbar toolbar;
     private ViewPager mViewPager;
-    private ViewPager profileViewPager;
     private ViewPager mViewPagerWelcome;
     private ImageView imgMon;
     private ImageView imgTue;
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements
         boolean hasBeenScheduled = false;
 
         for (JobInfo jobInfo : scheduler.getAllPendingJobs()) {
-            if (jobInfo.getId() == JOB_ID) {
+            if (jobInfo.getId() == JobModel.JOB_ID) {
                 hasBeenScheduled = true;
                 break;
             }
@@ -97,8 +98,6 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.i(TAG, "onCreate: ");
-
         initViews();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -114,41 +113,9 @@ public class MainActivity extends AppCompatActivity implements
         setupViewPager(mViewPager);
 
         setSupportActionBar(toolbar);
-        setNavigationListener();
-        runDb(); //if db does not exist, creates one.
-        //runNotifications(this);
+        setNavigationListener(); // listens for navigation bar clicks
+        db.init(); //if db does not exist, creates one.
         mContext = this;
-    }
-
-    public void runNotifications(Context context) {
-        NotificationHelper notificationHelper = new NotificationHelper(context);
-        notificationHelper.createNotificationChannel();
-        notificationHelper.pushNotification();
-    }
-
-    public void setSteps() {
-        if (mGoogleApiClient.isConnected()) {
-            Fitness.HistoryApi.readDailyTotal(mGoogleApiClient, DataType.TYPE_STEP_COUNT_DELTA)
-                    .setResultCallback(new ResultCallback<DailyTotalResult>() {
-                        @Override
-                        public void onResult(@NonNull DailyTotalResult totalResult) {
-                            if (totalResult.getStatus().isSuccess()) {
-                                DataSet totalSet = totalResult.getTotal();
-                                long total = (totalSet == null) || totalSet.isEmpty()
-                                        ? 0
-                                        : totalSet.getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
-
-                                stepsModel.setDailysteps(((int) total));
-                                System.out.println("set daily steps " + stepsModel.getDailysteps());
-                                // Update your UI here
-                            } else {
-                                // Handle failure
-                            }
-                        }
-                    });
-        } else if (!mGoogleApiClient.isConnecting()) {
-            mGoogleApiClient.connect();
-        }
     }
 
 
@@ -161,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         mContext = this;
+        db.pullFromStepGoalDb();
         db.pullFromDb();
         db.pullFromDissonanceDb();
         db.pullFromProfileDb();
@@ -168,24 +136,8 @@ public class MainActivity extends AppCompatActivity implements
 
         //Has user visited before? If yes continue, if no open welcome screen and dissonance form.
         if (!dissonanceFormModel.isAnswered()) {
-            //TODO force open dissonance form
-            Log.e(TAG, "onResume: USER MUST FILL IN FORM");
             setupWelcomePager(mViewPagerWelcome);
         }
-
-    }
-
-    private void initViews() {
-        imgMon = (ImageView) findViewById(R.id.imgMon);
-        imgTue = (ImageView) findViewById(R.id.imgTue);
-        imgWed = (ImageView) findViewById(R.id.imgWed);
-        imgThu = (ImageView) findViewById(R.id.imgThu);
-        imgFri = (ImageView) findViewById(R.id.imgFri);
-        imgSat = (ImageView) findViewById(R.id.imgSat);
-        imgSun = (ImageView) findViewById(R.id.imgSun);
-        toolbar = (Toolbar) findViewById(R.id.app_bar);
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPagerWelcome = (ViewPager) findViewById(R.id.containerWelcomePage);
     }
 
     public void onConnected(@Nullable Bundle bundle) {
@@ -198,37 +150,6 @@ public class MainActivity extends AppCompatActivity implements
             Log.i(TAG, "onConnected: Job already scheduled, updating ui");
             setSteps();
         }
-    }
-
-    public void scheduleJob() {
-        ComponentName componentName = new ComponentName(this, ExampleJobService.class);
-        JobInfo info = new JobInfo.Builder(JOB_ID, componentName)
-                .setPersisted(true)
-                .setPeriodic(15 * 60 * 1000)
-                .build();
-
-        JobScheduler scheduler = (JobScheduler)
-                getSystemService(JOB_SCHEDULER_SERVICE);
-
-        int resultCode = scheduler.schedule(info);
-
-        if (resultCode == JobScheduler.RESULT_SUCCESS) {
-            Log.i(TAG, "scheduleJob: Job Scheduled");
-        } else {
-            Log.i(TAG, "scheduleJob: Job scheduling failed");
-        }
-    }
-
-    public void cancelJob() {
-        JobScheduler scheduler = (JobScheduler)
-                getSystemService(JOB_SCHEDULER_SERVICE);
-        scheduler.cancel(JOB_ID);
-        Log.i(TAG, "cancelJob: Job Cancelled");
-    }
-
-    //this creates database if one does not already exist.
-    public void runDb() {
-        SQLiteDatabase collectionDB = db.getWritableDatabase();
     }
 
 
@@ -261,21 +182,75 @@ public class MainActivity extends AppCompatActivity implements
         return super.onCreateOptionsMenu(menu);
     }
 
-    /*
-     *   Automatically starts the first fragment in the list below.
-     *   Other fragments are called upon button click as apparent in
-     *   each fragment class.
-     */
-    private void setupViewPager(ViewPager viewPager) {
-        FormStatePagerAdapter adapter = new FormStatePagerAdapter(getSupportFragmentManager());
-
-        adapter.addFragment(new StepCountFragment(), "Steps");
-        adapter.addFragment(new CalorieFragment(), "Calorie");
-        adapter.addFragment(new DistanceFragment(), "Distance");
-        adapter.addFragment(new HeartRateFragment(), "Calories");
-        viewPager.setAdapter(adapter);
+    private void initViews() {
+        imgMon = (ImageView) findViewById(R.id.imgMon);
+        imgTue = (ImageView) findViewById(R.id.imgTue);
+        imgWed = (ImageView) findViewById(R.id.imgWed);
+        imgThu = (ImageView) findViewById(R.id.imgThu);
+        imgFri = (ImageView) findViewById(R.id.imgFri);
+        imgSat = (ImageView) findViewById(R.id.imgSat);
+        imgSun = (ImageView) findViewById(R.id.imgSun);
+        toolbar = (Toolbar) findViewById(R.id.app_bar);
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPagerWelcome = (ViewPager) findViewById(R.id.containerWelcomePage);
     }
 
+    /*
+    User current step method. Data is read from GoogleFit API and converted to int.
+     */
+    public void setSteps() {
+        if (mGoogleApiClient.isConnected()) {
+            Fitness.HistoryApi.readDailyTotal(mGoogleApiClient, DataType.TYPE_STEP_COUNT_DELTA)
+                    .setResultCallback(new ResultCallback<DailyTotalResult>() {
+                        @Override
+                        public void onResult(@NonNull DailyTotalResult totalResult) {
+                            if (totalResult.getStatus().isSuccess()) {
+                                DataSet totalSet = totalResult.getTotal();
+                                long total = (totalSet == null) || totalSet.isEmpty()
+                                        ? 0
+                                        : totalSet.getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
+                                stepsModel.setDailysteps(((int) total));
+                            } else {
+                                // Handle failure
+                            }
+                        }
+                    });
+        } else if (!mGoogleApiClient.isConnecting()) {//user is not connected to GoogleFit.
+            mGoogleApiClient.connect();
+        }
+    }
+
+    //Create Job.
+    public void scheduleJob() {
+        ComponentName componentName = new ComponentName(this, ExampleJobService.class);
+        JobInfo info = new JobInfo.Builder(JobModel.JOB_ID, componentName)
+                .setPersisted(true)
+                .setPeriodic(JobModel.TIME_BETWEEN_JOBS)
+                .build();
+
+        JobScheduler scheduler = (JobScheduler)
+                getSystemService(JOB_SCHEDULER_SERVICE);
+
+        int resultCode = scheduler.schedule(info);
+
+        if (resultCode == JobScheduler.RESULT_SUCCESS) {
+            Log.i(TAG, "scheduleJob: Job Scheduled");
+        } else {
+            Log.i(TAG, "scheduleJob: Job scheduling failed");
+        }
+    }
+
+    //Cancel Job.
+    public void cancelJob() {
+        JobScheduler scheduler = (JobScheduler)
+                getSystemService(JOB_SCHEDULER_SERVICE);
+        scheduler.cancel(JobModel.JOB_ID);
+        Log.i(TAG, "cancelJob: Job Cancelled");
+    }
+
+    /*
+    Sets the bottom navigation bar and onclick interactivity from within this Activity.
+     */
     private void setNavigationListener() {
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavigationView);
         BottomNavigationViewHelper.removeShiftMode(bottomNavigationView);
@@ -283,19 +258,14 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
-
                 switch (id) {
-
                     case R.id.action_home:
-                        Log.i(TAG, "onNavigatbonItemSelected: Home");
                         setupViewPager(mViewPager);
                         break;
                     case R.id.action_profile:
-                        Log.i(TAG, "onNavigationItemSelected: Profile");
                         setupProfilePager(mViewPager);
                         break;
                     case R.id.action_custom:
-                        Log.i(TAG, "onNavigationItemSelected: Custom");
                         setupDissonancePager(mViewPager);
                         //Todo add cases for remaining nav items.
                 }
@@ -304,30 +274,10 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
-    private void setupProfilePager(ViewPager viewPager) {
-        FormStatePagerAdapter adapter = new FormStatePagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new ProfileFragment(), "User Profile");
-        adapter.addFragment(new DissonanceFormFragment(), "Dissonance Form Fragment");
-        viewPager.setAdapter(adapter);
-    }
-
-    private void setupDissonancePager(ViewPager viewPager) {
-        FormStatePagerAdapter adapter = new FormStatePagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new DissonanceFormFragment(), "Dissonance Form Fragment");
-        viewPager.setAdapter(adapter);
-    }
-
-    private void setupWelcomePager(ViewPager viewPager) {
-        FormStatePagerAdapter adapter = new FormStatePagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new WelcomeLandingFragment(), "First welcome Fragment");
-        adapter.addFragment(new WelcomeDissonanceFragment(), "Welcome Dissonance Form Fragment"); //same form to dissonant pager, but different view used.
-        viewPager.setAdapter(adapter);
-    }
-
-    public void setViewPager(int fragmentNumber) {
-        mViewPagerWelcome.setCurrentItem(fragmentNumber);
-    }
-
+    /*
+    Method assigns ticks/crosses to all seven daily fields based on weekly step goals.
+     This method has to be in this controller as it interacts with the UI thread.
+     */
     public void setDayTextView() {
         if (user.isMonday()) {
             imgMon.setImageResource(R.drawable.tickicon);
@@ -370,11 +320,14 @@ public class MainActivity extends AppCompatActivity implements
     Method is linked to dissonanceformfragment as an interface.
      */
     public void onFormCompletion() {
-        Log.i(TAG, "onFormCompleted: Called");
-        //TODO store / update user answers to new table in db - dissonance.db
+        setViewPagerWelcome(2);
         db.updateDissonance();
-        Toast.makeText(this, "Results successfully stored.", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this, MainActivity.class); //get out of welcome and back to home
+    }
+
+    public void onStepGoalFormCompletion() {
+        db.updateStepGoal();
+        Toast.makeText(this, "Customising your experience...", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
@@ -382,20 +335,56 @@ public class MainActivity extends AppCompatActivity implements
  Method is linked to profileformfragment as an interface.
   */
     public void onProfileUpdated() {
-        Log.i(TAG, "onProfileCompleted: Called");
         setupViewPager(mViewPager);
-        //TODO store / update user answers to new table in db - dissonance.db
-        db.updateProfile();
+        db.updateProfile(0);
         Toast.makeText(this, "Results successfully stored.", Toast.LENGTH_SHORT).show();
+    }
 
+    /*
+     *   Automatically starts the first fragment in the list below.
+     *   Other fragments are called upon button click as apparent in
+     *   each fragment class.
+     */
+    private void setupViewPager(ViewPager viewPager) {
+        FormStatePagerAdapter adapter = new FormStatePagerAdapter(getSupportFragmentManager());
+
+        adapter.addFragment(new StepCountFragment(), "Steps");
+        adapter.addFragment(new CalorieFragment(), "Calorie");
+        adapter.addFragment(new DistanceFragment(), "Distance");
+        adapter.addFragment(new HeartRateFragment(), "Calories");
+        viewPager.setAdapter(adapter);
+    }
+
+    private void setupProfilePager(ViewPager viewPager) {
+        FormStatePagerAdapter adapter = new FormStatePagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new ProfileFragment(), "User Profile");
+        adapter.addFragment(new DissonanceFormFragment(), "Dissonance Form Fragment");
+        viewPager.setAdapter(adapter);
+    }
+
+    private void setupDissonancePager(ViewPager viewPager) {
+        FormStatePagerAdapter adapter = new FormStatePagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new DissonanceFormFragment(), "Dissonance Form Fragment");
+        viewPager.setAdapter(adapter);
+    }
+
+    private void setupWelcomePager(ViewPager viewPager) {
+        FormStatePagerAdapter adapter = new FormStatePagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new WelcomeLandingFragment(), "First welcome Fragment");
+        adapter.addFragment(new WelcomeDissonanceFragment(), "Welcome Dissonance Form Fragment"); //same form to dissonant pager, but different view used.
+        adapter.addFragment(new WelcomeGoalFragment(), "Welcome Goal Fragment");
+        viewPager.setAdapter(adapter);
+    }
+
+    public void setViewPagerWelcome(int fragmentNumber) {
+        mViewPagerWelcome.setCurrentItem(fragmentNumber);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         Log.e("Main Activity", "onPause");
-        runNotifications(mContext);
-        goalCompletion.goalReached(db);
+        goalCompletion.goalReached(db); //checks if user has met daily goal.
     }
 
     @Override

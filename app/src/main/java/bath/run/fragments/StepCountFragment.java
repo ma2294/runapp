@@ -35,6 +35,7 @@ public class StepCountFragment extends Fragment {
     private TextView tvDailyStepsPercentage;
     private TextView tvDailySteps;
     private TextView tvMotivationalMessage;
+    private TextView txtStreak;
     private Button btnStreak;
     private ProgressBar progressBarDailySteps;
     public Runnable uiUpdater = new Runnable() {
@@ -45,7 +46,7 @@ public class StepCountFragment extends Fragment {
             progress = ((int) total);
             tvDailyStepsPercentage.setText(String.valueOf(progress) + "%");
             progressBarDailySteps.setProgress(progress);
-            btnStreak.setText(String.valueOf(user.getStreak()));
+            txtStreak.setText(String.valueOf(user.getStreak()));
             handler.postDelayed(uiUpdater, delayMillis);
         }
     };
@@ -61,9 +62,10 @@ public class StepCountFragment extends Fragment {
         progressBarDailySteps = (ProgressBar) view.findViewById(R.id.progressBarDailyCalories);
         tvMotivationalMessage = (TextView) view.findViewById(R.id.tvMotivationalMessage);
         btnStreak = (Button) view.findViewById(R.id.btnStreak);
+        txtStreak = (TextView) view.findViewById(R.id.txtStreak);
         tvMotivationalMessage.setText(mm.getMotivationalMessage());
         total = GoalCompletion.workOutRemainingPercentage(stepsModel.getDailysteps(), stepsModel.getDailyStepsGoal());
-        btnStreak.setText(String.valueOf(user.getStreak()));
+        txtStreak.setText(String.valueOf(user.getStreak()));
         Log.d(TAG, "onCreateView: started..");
 
         return view;
@@ -88,6 +90,7 @@ public class StepCountFragment extends Fragment {
     public void onResume() {
         super.onResume();
         startUpdatingUi();
+        setStreakIcon();
     }
 
     @Override
@@ -96,4 +99,19 @@ public class StepCountFragment extends Fragment {
 
         Log.i(TAG, "onDestroy: Step Fragment");
     }
+
+    public void setStreakIcon() {
+        if (user.getStreak() >= 0 && user.getStreak() < 3) {
+            btnStreak.setBackgroundResource(R.drawable.fire);
+        } else if (user.getStreak() > 2 && user.getStreak() < 5){
+            btnStreak.setBackgroundResource(R.drawable.silvermedal);
+        } else if (user.getStreak() > 4 && user.getStreak() < 7) {
+            btnStreak.setBackgroundResource(R.drawable.medal);
+        } else if (user.getStreak() > 6 && user.getStreak() < 9) {
+            btnStreak.setBackgroundResource(R.drawable.crown);
+        } else if (user.getStreak() > 8){
+    btnStreak.setBackgroundResource(R.drawable.winner);
+        }
+    }
 }
+

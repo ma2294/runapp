@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import bath.run.database.DatabaseHelper;
 import bath.run.model.DayOfTheWeekModel;
 import bath.run.model.DissonanceFormModel;
 import bath.run.model.GoalCompletion;
@@ -33,6 +34,7 @@ public class NotificationHelper {
     DayOfTheWeekModel dotw = new DayOfTheWeekModel();
     NotificationModel notificationModel = new NotificationModel();
     GoalCompletion gc = new GoalCompletion();
+    DatabaseHelper dbHelper = new DatabaseHelper(MainActivity.mContext);
     boolean userProgress = stepsModel.getDailyStepsGoal() - stepsModel.getDailysteps() > stepsModel.getDailysteps() * 0.5;
     String response = "";
     private Context mContext;
@@ -58,26 +60,8 @@ public class NotificationHelper {
         }
     }
 
-    //TODO push tailored notificaion based on singleton info.
-    public void pushNotification() {
-        int total = dissonanceFormModel.getAvg();
-        Bitmap largeIcon = BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.fireworks);
 
-
-        String s = "";
-        int remaining = stepsModel.getDailyStepsGoal() - stepsModel.getDailysteps();
-        if (remaining < 0) {
-            remaining = 0;
-        }
-
-            /*
-                if (currentsteps   goal)
-                    ------------ < ----    - dissonance = true.
-                    time passed     24
-             */
-
-        //TODO implement this method as described below
-        //Returns true = dissonance. False = expected performance and no dissonance.
+    //Returns true = dissonance. False = expected performance and no dissonance.
             /*if certain hour remaining > 10 i.e. still early in the day (AND DISSONANCE= TURE)
              then send message aimed to change perception of user first. This will start their day
              positively.
@@ -91,75 +75,122 @@ public class NotificationHelper {
              /11+ hours remaining - Change Perception
              //5-10 hours remaining - Change Goal
              // less than 5 hours remaining - Change action
-             //TODO CHECKS DISSONANCE
-              */
+
+       /*
+                if (currentsteps   goal)
+                    ------------ < ----    - dissonance = true.
+                    time passed     24
+             */
+
+    public void pushNotification() {
+        int total = dissonanceFormModel.getAvg();
+        String s = "";
+        int remaining = stepsModel.getDailyStepsGoal() - stepsModel.getDailysteps();
+        int notificationId = 0;
+
+        if (remaining < 0) {
+            remaining = 0;
+        }
+
+        Bitmap largeIcon = BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.question);
         if (workDissonance(stepsModel.getDailysteps(), dotw.getHour(), stepsModel.getDailyStepsGoal(), dotw.HOURS_IN_DAY)) {
-
-            //TODO CHECKS HOURS REMAINING 0-24
-
             int t = dotw.HOURS_IN_DAY - dotw.getHour();
 
-            //TODO CHECK_USER_TYPE
-            if (dissonanceFormModel.getAvg() == 0) {
-                //USER IS TYPE: LOW
+            if (dissonanceFormModel.getAvg() == 0) {   //USER IS TYPE: LOW
                 s = lowUser(t);
-            } else if (dissonanceFormModel.getAvg() == 1) {
-                Log.e(TAG, "pushNotification: Med user");
-                //USER IS TYPE: MED
+            } else if (dissonanceFormModel.getAvg() == 1) {   //USER IS TYPE: MED
                 s = medUser(t);
-            } else if (dissonanceFormModel.getAvg() == 2) {
-                //USER IS TYPE: HIGH
+                largeIcon = largeIconSelector(t);
+            } else if (dissonanceFormModel.getAvg() == 2) {   //USER IS TYPE: HIGH
                 s = highUser(t);
-                Log.e(TAG, "pushNotification: High user");
+                largeIcon = largeIconSelector(t);
             } else {
                 Toast.makeText(mContext, "Please complete the form under dissonance to access this feature.", Toast.LENGTH_SHORT).show();
                 return;
             }
-
+            notificationId = NotificationModel.ID_DISSONANCE; //dissonance id
         } else {//dissonance = false
-            if (total < 1) {
+            if (dissonanceFormModel.getCompetitiveness() <= 1) { //Low/ Med competitiveness
                 s = Notifications.lowCompetitiveness.LOW_STRING;
-            } else if (total >= 1) {
+                largeIcon = BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.run);
+            } else if (dissonanceFormModel.getCompetitiveness() > 1) { //Highly competitive individual
                 s = Notifications.highCompetitiveness.HIGH_STRING;
+                largeIcon = BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.winner);
             }
+            notificationId = NotificationModel.ID_NO_DISSONANCE; // no dissonance id
         }
+        sendNotification(s, largeIcon, remaining, notificationId);
+    }
 
-
-        //TODO intent must link with notification. I.e. Prompting user to change goal opens that activity.
-
-
+    private void sendNotification(String s, Bitmap largeIcon, int remaining, int notificationId) {
         Intent intent = new Intent(MainActivity.mContext, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.mContext, 0, intent, 0);
 
-        //TODO check msg type and assign appropriate bitmap icon.
-
+        String stepsRemainingMsg = "";
+        if (stepsModel.getDailysteps() >= stepsModel.getDailyStepsGoal()) {
+            stepsRemainingMsg = "You have completed your daily steps.";
+        } else {
+            stepsRemainingMsg = "You have " + remaining + " steps remaining.";
+        }
 
         NotificationCompat.Builder mBuilder = new NotificationCompat
                 .Builder(mContext, "msg")
                 .setSmallIcon(R.drawable.run)
                 .setLargeIcon(largeIcon)
-                .setContentTitle(s)
-                .setContentText("You have " + remaining + " steps remaining.")
+                .setContentTitle(stepsRemainingMsg)
+                .setContentText(s)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(s))
                 .setContentIntent(pendingIntent)
                 .setColor(Color.BLUE)
                 .setPriority(NotificationCompat.PRIORITY_MAX);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(mContext);
 
-// notificationId is a unique int for each notification that you must define
-        notificationManager.notify(2, mBuilder.build());
+        // notificationId is a unique int for each notification that you must define
+        notificationManager.notify(notificationId, mBuilder.build());
+    }
+
+
+    private Bitmap largeIconSelector(int t) {
+        switch (t) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+                return BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.question);
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+                return BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.fire);
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+                return BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.medal);
+
+            default:
+                return BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.run);
+        }
+
     }
 
     private String lowUser(int t) {
-        if (t <= 3) { //3 hours remaining - CHECK IF USER IS CLOSE OR FAR FROM GOAL
+        if (t <= 6) { //3 hours remaining - CHECK IF USER IS CLOSE OR FAR FROM GOAL
             if (userProgress) {
                 //user is too far away.
                 response = notificationModel.lowUserUrgent(10);
+                stepsModel.setDailyStepsGoal(generateNewUserGoal());
+                dbHelper.updateStepGoal();
             } else { //user can make it
                 response = notificationModel.lowUserUrgent(MotivationalMessages.getRandomNumberInRange(1, 2));
             }
-        } else if (t >= 4 && t <= 10) { //4-8
+        } else if (t >= 7 && t <= 10) { //4-8
             response = notificationModel.lowUserMiddle(MotivationalMessages.getRandomNumberInRange(1, 3));
         } else if (t >= 11) { //9+
             if (stepsModel.getDailysteps() < stepsModel.getDailyStepsGoal() * 0.03) {
@@ -172,14 +203,16 @@ public class NotificationHelper {
     }
 
     private String medUser(int t) {
-        if (t <= 3) { //3 hours remaining - CHECK IF USER IS CLOSE OR FAR FROM GOAL
+        if (t <= 6) { //3 hours remaining - CHECK IF USER IS CLOSE OR FAR FROM GOAL
             if (userProgress) {
                 //user is too far away.
                 response = notificationModel.medUserUrgent(10);
+                stepsModel.setDailyStepsGoal(generateNewUserGoal());
+                dbHelper.updateStepGoal();
             } else { //user can make it
                 response = notificationModel.medUserUrgent(MotivationalMessages.getRandomNumberInRange(1, 3));
             }
-        } else if (t >= 4 && t <= 10) { //4-8
+        } else if (t >= 7 && t <= 10) { //4-8
             response = notificationModel.medUserMiddle(MotivationalMessages.getRandomNumberInRange(1, 5));
         } else if (t >= 11) { //9+
             if (stepsModel.getDailysteps() < stepsModel.getDailyStepsGoal() * 0.03) {
@@ -192,14 +225,16 @@ public class NotificationHelper {
     }
 
     private String highUser(int t) {
-        if (t <= 3) { //3 hours remaining - CHECK IF USER IS CLOSE OR FAR FROM GOAL
+        if (t <= 6) { //3 hours remaining - CHECK IF USER IS CLOSE OR FAR FROM GOAL
             if (userProgress) {
                 //user is too far away.
                 response = notificationModel.highUserUrgent(10);
+                stepsModel.setDailyStepsGoal(generateNewUserGoal());
+                dbHelper.updateStepGoal();
             } else { //user can make it
                 response = notificationModel.highUserUrgent(MotivationalMessages.getRandomNumberInRange(1, 5));
             }
-        } else if (t >= 4 && t <= 10) { //4-8
+        } else if (t >= 7 && t <= 10) { //4-8
             response = notificationModel.highUserMiddle(MotivationalMessages.getRandomNumberInRange(1, 7));
         } else if (t >= 11) { //9+
             if (stepsModel.getDailysteps() < stepsModel.getDailyStepsGoal() * 0.03) {
@@ -209,6 +244,23 @@ public class NotificationHelper {
             }
         }
         return response;
+    }
+
+    private int generateNewUserGoal() {
+        //Inverse User Type and Add 1 to get a scaled new goal result.
+        int inverseAvg = 1;
+        if (dissonanceFormModel.getAvg() == 0) {
+            inverseAvg = 3;
+        } else if (dissonanceFormModel.getAvg() == 1) {
+            inverseAvg = 2;
+        } else if (dissonanceFormModel.getAvg() == 2) {
+            inverseAvg = 1;
+        }
+        double result = ((stepsModel.getDailyStepsGoal() - stepsModel.getDailysteps()) / (Math.pow(2, inverseAvg))) + ((stepsModel.getDailyStepsGoal() - stepsModel.getDailysteps()) / 10);
+        System.out.println("Goal was " + stepsModel.getDailyStepsGoal());
+        int intResult = stepsModel.getDailyStepsGoal() - (int) result;
+        System.out.println("Minused " + intResult);
+        return intResult;
     }
 
     private boolean workDissonance(int dailysteps, int hour, int dailyStepsGoal, int hours_in_day) {

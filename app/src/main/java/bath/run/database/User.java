@@ -16,8 +16,6 @@ public class User {
     private boolean saturday = false;
     private boolean sunday = false;
     private int streak = 0;
-    private int yesterdayStreak = 0;
-    private int currentday = 0;
     private int lastday = 0;
 
 

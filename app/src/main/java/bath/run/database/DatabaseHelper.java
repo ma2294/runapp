@@ -10,6 +10,7 @@ import android.util.Log;
 
 import bath.run.model.DayOfTheWeekModel;
 import bath.run.model.DissonanceFormModel;
+import bath.run.model.StepsModel;
 import bath.run.model.UserProfileModel;
 import bath.run.database.UserDbSchema.UserTable;
 
@@ -20,14 +21,12 @@ import bath.run.database.UserDbSchema.UserTable;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final int VERSION = 1;
-    private static final String TABLE_NAME_USER = "user";
-    private static final String TABLE_NAME_PROFILE = "profile";
-    private static final String DATABASE_NAME = "user.db";
     private static final String TAG = "DatabaseHelper";
     DissonanceFormModel dissonanceFormModel = DissonanceFormModel.getInstance();
     UserProfileModel userProfileModel = UserProfileModel.getInstance();
     DayOfTheWeekModel dotw = new DayOfTheWeekModel();
     User user = User.getInstance();
+    StepsModel stepsModel = StepsModel.getInstance();
     private SQLiteDatabase mDatabase;
     private String whereUserTable = "week = ?";
     private String[] whereArgsUserTable = new String[]{
@@ -35,7 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     };
 
     public DatabaseHelper(Context context) {
-        super(context, "user.db", null, VERSION);
+        super(context, UserTable.DATABASE_NAME, null, VERSION);
     }
 
     @Override
@@ -43,10 +42,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(UserTable.SQL_CREATE_ENTRIES);
         db.execSQL(UserTable.USER_DISSONANCE_ENTRIES);
         db.execSQL(UserTable.USER_PROFILE_ENTRIES);
+        db.execSQL(UserTable.USER_STEPS_GOAL_ENTRIES);
         Log.i(TAG, "onCreate");
         insert(db);
         insertDissonance(db);
         insertProfile(db);
+        insertStepGoal(db);
     }
 
     @Override
@@ -54,8 +55,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("drop table if exists user");
         db.execSQL("drop table if exists dissonance");
         db.execSQL("drop table if exists profile");
+        db.execSQL("drop table if exists stepsgoal");
     }
 
+    public void init() {
+        SQLiteDatabase collectionDB = getWritableDatabase();
+    }
 
     private Cursor queryUser(String whereClause, String[] whereArgs, String tableName) {
 
@@ -72,9 +77,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    public void pullFromStepGoalDb() {
+        Cursor cursor = queryUser(null, null, UserTable.TABLE_NAME_STEPS_GOAL);
+        try {
+            cursor.moveToFirst();
+            int stepsGoal = cursor.getInt(0);
+            stepsModel.setDailyStepsGoal(stepsGoal);
+        } finally {
+            cursor.close();
+        }
+    }
+
     public void pullFromProfileDb() {
-        Cursor cursor = queryUser(null, null, "profile");
-        try{
+        Cursor cursor = queryUser(null, null, UserTable.TABLE_NAME_PROFILE);
+        try {
             cursor.moveToFirst();
             String name = cursor.getString(0);
             int weight = cursor.getInt(1);
@@ -93,9 +109,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor.close();
         }
     }
-    public void pullFromDissonanceDb(){
-        Cursor cursor = queryUser(null, null, "dissonance");
-        try{
+
+    public void pullFromDissonanceDb() {
+        Cursor cursor = queryUser(null, null, UserTable.TABLE_NAME_DISSONANCE);
+        try {
             cursor.moveToFirst();
             int one = cursor.getInt(0);
             int two = cursor.getInt(1);
@@ -105,14 +122,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             dissonanceFormModel.setFrequency(two);
             dissonanceFormModel.setCompetitiveness(three);
             dissonanceFormModel.setAnswered(four);
-            Log.i(TAG, "pullFromDissonanceDb: "+dissonanceFormModel.toString());
+            Log.i(TAG, "pullFromDissonanceDb: " + dissonanceFormModel.toString());
         } finally {
             cursor.close();
         }
     }
+
     //Query db where date = current date. Sets booleans to current column values. Sets this to user.
     public void pullFromDb() {
-        Cursor cursor = queryUser(whereUserTable, whereArgsUserTable, "user");
+        Cursor cursor = queryUser(whereUserTable, whereArgsUserTable, UserTable.TABLE_NAME_USER);
         try {
             cursor.moveToFirst();
 
@@ -186,7 +204,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 //nothing
                 break;
         }
-        db.update(TABLE_NAME_USER, contentValues, whereUserTable, whereArgsUserTable);
+        db.update(UserTable.TABLE_NAME_USER, contentValues, whereUserTable, whereArgsUserTable);
     }
 
     //TODO call when button is pressed
@@ -199,10 +217,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("question2", dissonanceFormModel.getFrequency());
         contentValues.put("question3", dissonanceFormModel.getCompetitiveness());
         contentValues.put("answered", dissonanceFormModel.isAnswered() ? 1 : 0);
-        db.update("dissonance", contentValues, null,null);
+        db.update("dissonance", contentValues, null, null);
     }
 
-    public void updateProfile() {
+    public void updateProfile(int type) {
         Log.i(TAG, "updateProfile: called");
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -211,11 +229,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("weight", userProfileModel.getWeight());
         contentValues.put("height", userProfileModel.getHeight());
         contentValues.put("weightprompt", userProfileModel.getWeightPrompt());
-        contentValues.put("streak", user.getStreak());
-        contentValues.put("lastday", user.getLastday());
-        System.out.println("streak "+user.getStreak()+ ". lastday "+user.getLastday());
-        db.update(TABLE_NAME_PROFILE, contentValues, null,null);
+        if (type > 0) {
+            contentValues.put("streak", user.getStreak());
+        }
+        if (type > 1) {
+            contentValues.put("lastday", dotw.getDay());
+        }
+        db.update(UserTable.TABLE_NAME_PROFILE, contentValues, null, null);
     }
+
+    public void updateStepGoal() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("stepgoal", stepsModel.getDailyStepsGoal());
+        db.update(UserTable.TABLE_NAME_STEPS_GOAL, contentValues, null, null);
+    }
+
     //insert into db
     //TODO  call this when week is over.
     public void insert(SQLiteDatabase db)
@@ -230,20 +259,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("saturday", user.isSaturday() ? 1 : 0);
         contentValues.put("sunday", user.isSunday() ? 1 : 0);
 
-        db.insert(TABLE_NAME_USER, null, contentValues);
-
+        db.insert(UserTable.TABLE_NAME_USER, null, contentValues);
     }
 
     public void insertDissonance(SQLiteDatabase db)
-        throws SQLException {
+            throws SQLException {
         ContentValues contentValues = new ContentValues();
         contentValues.put(UserTable.DissonanceCols.Q1, dissonanceFormModel.getCare());
         contentValues.put(UserTable.DissonanceCols.Q2, dissonanceFormModel.getFrequency());
         contentValues.put(UserTable.DissonanceCols.Q3, dissonanceFormModel.getCompetitiveness());
         contentValues.put("answered", dissonanceFormModel.isAnswered() ? 1 : 0);
 
-        db.insert("dissonance", null, contentValues);
+        db.insert(UserTable.TABLE_NAME_DISSONANCE, null, contentValues);
     }
+
+    public void insertStepGoal(SQLiteDatabase db)
+            throws SQLException {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("stepgoal", stepsModel.getDailyStepsGoal());
+        db.insert(UserTable.TABLE_NAME_STEPS_GOAL, null, contentValues);
+    }
+
     public void insertProfile(SQLiteDatabase db)
             throws SQLException {
         ContentValues contentValues = new ContentValues();
@@ -254,7 +290,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("streak", user.getStreak());
         contentValues.put("lastday", user.getLastday());
 
-        db.insert("profile", null, contentValues);
+        db.insert(UserTable.TABLE_NAME_PROFILE, null, contentValues);
     }
 
 

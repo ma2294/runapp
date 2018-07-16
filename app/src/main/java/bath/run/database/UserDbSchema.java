@@ -8,9 +8,11 @@ public class UserDbSchema {
 
     public static final class UserTable {
         //Set name of table
-        public static final String NAME = "user";
+        public static final String TABLE_NAME_USER = "user";
         public static final String TABLE_NAME_DISSONANCE = "dissonance";
         public static final String TABLE_NAME_PROFILE = "profile";
+        public static final String TABLE_NAME_STEPS_GOAL = "stepsgoal";
+        public static final String DATABASE_NAME = "user.db";
 
         public static final String USER_DISSONANCE_ENTRIES =
                 "CREATE TABLE "
@@ -19,10 +21,13 @@ public class UserDbSchema {
         public static final String USER_PROFILE_ENTRIES =
                 "CREATE TABLE "
                         + TABLE_NAME_PROFILE + "(name TEXT, weight INTEGER, height INTEGER, weightprompt INTEGER, streak INTEGER, lastday INTEGER)";
+        public static final String USER_STEPS_GOAL_ENTRIES =
+                "CREATE TABLE "
+                        + TABLE_NAME_STEPS_GOAL + "(stepgoal INTEGER)";
 
         public static final String SQL_CREATE_ENTRIES =
                 "CREATE TABLE "
-                        + NAME + "(week integer, "
+                        + TABLE_NAME_USER + "(week integer, "
                         + Cols.MONDAY + " boolean, "
                         + Cols.TUESDAY + " boolean, "
                         + Cols.WEDNESDAY + " boolean," +

@@ -19,8 +19,7 @@ public class FormStatePagerAdapter extends FragmentStatePagerAdapter {
     //Not needed for my application, but handy for keeping track of fragments if in the future I were to add more forms
     private final List<String> mFragmentTitleList = new ArrayList<>();
 
-
-    //Our default constructor
+    //Default constructor
     public FormStatePagerAdapter(FragmentManager fm) {
         super(fm);
     }

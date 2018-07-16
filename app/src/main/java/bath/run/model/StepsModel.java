@@ -3,7 +3,7 @@ package bath.run.model;
 public class StepsModel {
     private static StepsModel instance = null;
     private int dailysteps;
-    private int dailyStepsGoal = 10000; //TODO add contextualised step goals- must store in db.. or start at 5000, 7500 and 10000 based on user type and then accomodate based on previous day performance. If reached +10% if not -10%.
+    private int dailyStepsGoal = 150000; //TODO add contextualised step goals- must store in db.. or start at 5000, 7500 and 10000 based on user type and then accomodate based on previous day performance. If reached +10% if not -10%.
 
     private StepsModel() {
     }

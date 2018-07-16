@@ -16,17 +16,14 @@ import bath.run.fragments.DissonanceFormFragment;
 
 public class ExampleJobService extends JobService {
     private static final String TAG = "ExampleJobService";
-    private boolean jobcancelled = false;
     MainActivity mainActivity = new MainActivity();
     NotificationHelper notificationHelper;
-
+    private boolean jobcancelled = false;
     private Context context;
-    //TODO remove above call and make mainactivity singleton if this causes problems.
-
 
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
-        Log.i(TAG, "onStartJob: ");
+        Log.i(TAG, "onStartJob");
         doBackgroundWork(jobParameters);
         return true; //this runs in ui thread so must be handled upon completion
     }
@@ -36,23 +33,19 @@ public class ExampleJobService extends JobService {
 
             @Override
             public void run() {
-                Log.e(TAG, "run: ...... ");
                 if (jobcancelled) {
                     return; //leave immediately.
                 }
-                //TODO better implement tes() and setsteps() without reinstantiating main
-                //mainActivity.runNotifications(context);
                 context = MainActivity.mContext;
                 notificationHelper = new NotificationHelper(context);
                 notificationHelper.createNotificationChannel();
                 notificationHelper.pushNotification();
                 mainActivity.setSteps();
-                Log.e(TAG, "run: Job Finished");
+                Log.e(TAG, "Job Finished");
                 jobFinished(jobParameters, false);
             }
         }).start();
     }
-
 
     @Override
     public boolean onStopJob(JobParameters jobParameters) {

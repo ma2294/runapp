@@ -14,6 +14,7 @@ public class GoalCompletion {
     private static double total = 0;
     DayOfTheWeekModel dotw = new DayOfTheWeekModel();
     StepsModel stepsModel = StepsModel.getInstance();
+    DissonanceFormModel dissonanceFormModel = DissonanceFormModel.getInstance();
     User user = User.getInstance();
 
     public static double workOutRemainingPercentage(double currentValue, double goal) {
@@ -25,15 +26,29 @@ public class GoalCompletion {
         return total;
     }
 
+    public void newDailyGoal(int callType) {
+        int i = stepsModel.getDailyStepsGoal() / 100;
+        int totalGoal = (i + (dotw.HOURS_IN_DAY - dotw.getHour())) + dissonanceFormModel.getAvg();
+        totalGoal = totalGoal / 5;
+        if (callType == 1) { //user reaches step goal
+            stepsModel.setDailyStepsGoal(stepsModel.getDailyStepsGoal() + totalGoal);
+        } else { //user loses streak and thus does not reach step goal
+            stepsModel.setDailyStepsGoal(stepsModel.getDailyStepsGoal() + totalGoal);
+        }
+    }
+
     public void goalReached(DatabaseHelper db) {
         int day = dotw.getDay();
         //if week resets this first conditional statement prevents bugs from occurring.
-        if(dotw.getDay() < user.getLastday() && stepsModel.getDailysteps() >= stepsModel.getDailyStepsGoal()) {
-            user.setLastday(dotw.getCurrentDay());
+        if (dotw.getDay() > user.getLastday() + 1) { //2 days gap = reset streak.
+            user.setStreak(0);
+        }
+        if (dotw.getDay() < user.getLastday() && stepsModel.getDailysteps() >= stepsModel.getDailyStepsGoal()) {
+            newDailyGoal(1); // Will get overwritten each day the user reaches daily steps.
+            user.setLastday(dotw.getDay());
             user.setStreak(user.getStreak() + 1);
-            db.updateProfile();
-            System.out.println("curent day" +dotw.getCurrentDay());
-            System.out.println("streak ==== "+user.getStreak());
+            db.updateStepGoal();
+            db.updateProfile(2);
             user.setDay(true, day);
             for (int i = 0; i <= dotw.DAYS_IN_WEEK; i++) {
                 if (day == i) {
@@ -44,12 +59,12 @@ public class GoalCompletion {
         //this is the normal statement that will occur. but only when current day > lastday. i.e. fails and requires statement above when week resets.
         if (stepsModel.getDailysteps() >= stepsModel.getDailyStepsGoal()) {
             if (user.getLastday() < dotw.getDay()) {
-                System.out.println(user.getLastday() + " < "+dotw.getDay());
-                user.setLastday(dotw.getCurrentDay());
+                newDailyGoal(1); // Will get overwritten each day the user reaches daily steps.
+                System.out.println(user.getLastday() + " < " + dotw.getDay());
+                user.setLastday(dotw.getDay());
                 user.setStreak(user.getStreak() + 1);
-                db.updateProfile();
-                System.out.println("curent day" +dotw.getCurrentDay());
-                System.out.println("streak ==== "+user.getStreak());
+                db.updateStepGoal();
+                db.updateProfile(2);
                 user.setDay(true, day);
                 for (int i = 0; i <= dotw.DAYS_IN_WEEK; i++) {
                     if (day == i) {
@@ -57,7 +72,7 @@ public class GoalCompletion {
                     }
                 }
             } else {
-                System.out.println("GoalReached method: last day is not < current day ("+user.getLastday()+" > "+dotw.getDay());
+                System.out.println("GoalReached method: last day is not < current day (" + user.getLastday() + " > " + dotw.getDay());
             }
         }
     }
