@@ -3,11 +3,11 @@
 
     android:shape="oval"
     android:thickness="2dp"
-    android:width="10dp"
-    android:height="10dp"
+    android:width="25dp"
+    android:height="25dp"
     android:useLevel="true">
 
-    <solid android:color="@color/runBlue"></solid>
+    <solid android:color="@color/blackTransparent"></solid>
 
 
 </shape>

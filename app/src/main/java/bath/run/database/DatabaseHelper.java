@@ -98,12 +98,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int weightPrompt = cursor.getInt(3);
             int streak = cursor.getInt(4);
             int lastday = cursor.getInt(5);
+            int beststreak = cursor.getInt(6);
 
             userProfileModel.setName(name);
             userProfileModel.setWeight(weight);
             userProfileModel.setHeight(height);
             userProfileModel.setWeightPrompt(weightPrompt);
             user.setStreak(streak);
+            user.setBestStreak(beststreak);
             user.setLastday(lastday);
         } finally {
             cursor.close();
@@ -235,6 +237,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (type > 1) {
             contentValues.put("lastday", dotw.getDay());
         }
+        contentValues.put("beststreak", user.getBestStreak());
         db.update(UserTable.TABLE_NAME_PROFILE, contentValues, null, null);
     }
 
@@ -289,6 +292,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("weightprompt", userProfileModel.getWeightPrompt());
         contentValues.put("streak", user.getStreak());
         contentValues.put("lastday", user.getLastday());
+        contentValues.put("beststreak", user.getBestStreak());
 
         db.insert(UserTable.TABLE_NAME_PROFILE, null, contentValues);
     }

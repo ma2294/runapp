@@ -16,6 +16,7 @@ public class User {
     private boolean saturday = false;
     private boolean sunday = false;
     private int streak = 0;
+    private int bestStreak = 0;
     private int lastday = 0;
 
 
@@ -102,6 +103,13 @@ public class User {
         this.streak = streak;
     }
 
+    public int getBestStreak() {
+        return bestStreak;
+    }
+
+    public void setBestStreak(int bestStreak) {
+        this.bestStreak = bestStreak;
+    }
 
     public void setDay(boolean stepsComplete, int day) {
         switch (day) {
@@ -160,5 +168,4 @@ public class User {
                 + isSaturday() + ". Sunday steps: "
                 + isSunday() + ". Week of year: " + getWeek();
     }
-
 }

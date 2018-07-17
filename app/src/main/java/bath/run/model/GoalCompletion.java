@@ -83,5 +83,12 @@ public class GoalCompletion {
                 System.out.println("GoalReached method: last day is not < current day (" + user.getLastday() + " > " + dotw.getDay());
             }
         }
+
+        //finally check streak against beststreak
+        if (user.getStreak() > user.getBestStreak()){
+            user.setBestStreak(user.getStreak());
+            db.updateProfile(0); //0 because there is no need to update anything other than best streak.
+            Log.e("GoalCompletion", "New best streak ="+user.getBestStreak());
+        }
     }
 }

@@ -5,7 +5,6 @@ import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -35,9 +34,7 @@ import bath.run.database.DatabaseHelper;
 import bath.run.database.User;
 import bath.run.fragments.CalorieFragment;
 import bath.run.fragments.DissonanceFormFragment;
-import bath.run.fragments.DistanceFragment;
 import bath.run.fragments.FormStatePagerAdapter;
-import bath.run.fragments.HeartRateFragment;
 import bath.run.fragments.Landing_page.WelcomeGoalFragment;
 import bath.run.fragments.Landing_page.WelcomeLandingFragment;
 import bath.run.fragments.ProfileFragment;
@@ -134,8 +131,8 @@ public class MainActivity extends AppCompatActivity implements
         db.pullFromDissonanceDb();
         db.pullFromProfileDb();
         setDayTextView();
-
-        user.setStreak(5);
+        user.setBestStreak(8);
+        db.updateProfile(0);
         //Has user visited before? If yes continue, if no open welcome screen and dissonance form.
         if (!dissonanceFormModel.isAnswered()) {
             setupWelcomePager(mViewPagerWelcome);
@@ -355,15 +352,12 @@ public class MainActivity extends AppCompatActivity implements
 
         adapter.addFragment(new StepCountFragment(), "Steps");
         adapter.addFragment(new CalorieFragment(), "Calorie");
-        adapter.addFragment(new DistanceFragment(), "Distance");
-        adapter.addFragment(new HeartRateFragment(), "Calories");
         viewPager.setAdapter(adapter);
     }
 
     private void setupProfilePager(ViewPager viewPager) {
         FormStatePagerAdapter adapter = new FormStatePagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new ProfileFragment(), "User Profile");
-        adapter.addFragment(new DissonanceFormFragment(), "Dissonance Form Fragment");
         viewPager.setAdapter(adapter);
     }
 

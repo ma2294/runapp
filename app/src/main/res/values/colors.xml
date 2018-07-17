@@ -7,6 +7,7 @@
     <color name="white">#FFFFFF</color>
     <color name="runBlue">#0e81e6</color>
     <color name="black">#000000</color>
+    <color name="blackTransparent">#55000000</color>
     <color name="viewline">#8395A6</color>
     <color name="colorWhiteTransparent">#80ffffff</color>
     <color name="colorWhiteVTransparent">#35ffffff</color>

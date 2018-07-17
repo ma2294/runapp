@@ -20,7 +20,7 @@ public class UserDbSchema {
 
         public static final String USER_PROFILE_ENTRIES =
                 "CREATE TABLE "
-                        + TABLE_NAME_PROFILE + "(name TEXT, weight INTEGER, height INTEGER, weightprompt INTEGER, streak INTEGER, lastday INTEGER)";
+                        + TABLE_NAME_PROFILE + "(name TEXT, weight INTEGER, height INTEGER, weightprompt INTEGER, streak INTEGER, lastday INTEGER, beststreak INTEGER)";
         public static final String USER_STEPS_GOAL_ENTRIES =
                 "CREATE TABLE "
                         + TABLE_NAME_STEPS_GOAL + "(stepgoal INTEGER)";

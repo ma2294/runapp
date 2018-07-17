@@ -6,7 +6,6 @@
     android:useLevel="true"
      >
 
-
     <solid android:color="@color/colorWhiteVTransparent"></solid>
 
 </shape>

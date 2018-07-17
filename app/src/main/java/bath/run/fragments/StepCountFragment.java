@@ -26,17 +26,19 @@ import bath.run.model.StepsModel;
 public class StepCountFragment extends Fragment {
     private static final String TAG = "StepCountFragment";
     final Handler handler = new Handler();
+    private final int delayMillis = 5000;
     MotivationalMessages mm = new MotivationalMessages();
     StepsModel stepsModel = StepsModel.getInstance();
     User user = User.getInstance();
     double total = 0;
     int progress = 0;
-    private final int delayMillis = 5000;
     private TextView tvDailyStepsPercentage;
     private TextView tvDailySteps;
     private TextView tvMotivationalMessage;
     private TextView txtStreak;
+    private TextView txtBestStreak;
     private Button btnStreak;
+    private Button btnBestStreak;
     private ProgressBar progressBarDailySteps;
     public Runnable uiUpdater = new Runnable() {
         @Override
@@ -47,7 +49,9 @@ public class StepCountFragment extends Fragment {
             tvDailyStepsPercentage.setText(String.valueOf(progress) + "%");
             progressBarDailySteps.setProgress(progress);
             txtStreak.setText(String.valueOf(user.getStreak()));
+            txtBestStreak.setText(String.valueOf(user.getBestStreak()));
             handler.postDelayed(uiUpdater, delayMillis);
+            System.out.println("");
         }
     };
 
@@ -62,7 +66,9 @@ public class StepCountFragment extends Fragment {
         progressBarDailySteps = (ProgressBar) view.findViewById(R.id.progressBarDailyCalories);
         tvMotivationalMessage = (TextView) view.findViewById(R.id.tvMotivationalMessage);
         btnStreak = (Button) view.findViewById(R.id.btnStreak);
+        btnBestStreak = (Button) view.findViewById(R.id.btnBestStreak);
         txtStreak = (TextView) view.findViewById(R.id.txtStreak);
+        txtBestStreak = (TextView) view.findViewById(R.id.txtBestStreak);
         tvMotivationalMessage.setText(mm.getMotivationalMessage());
         total = GoalCompletion.workOutRemainingPercentage(stepsModel.getDailysteps(), stepsModel.getDailyStepsGoal());
         txtStreak.setText(String.valueOf(user.getStreak()));
@@ -90,7 +96,8 @@ public class StepCountFragment extends Fragment {
     public void onResume() {
         super.onResume();
         startUpdatingUi();
-        setStreakIcon();
+        setStreakIcon(user.getStreak(), btnStreak);
+        setStreakIcon(user.getBestStreak(), btnBestStreak);
     }
 
     @Override
@@ -100,17 +107,34 @@ public class StepCountFragment extends Fragment {
         Log.i(TAG, "onDestroy: Step Fragment");
     }
 
-    public void setStreakIcon() {
-        if (user.getStreak() >= 0 && user.getStreak() < 3) {
-            btnStreak.setBackgroundResource(R.drawable.fire);
-        } else if (user.getStreak() > 2 && user.getStreak() < 5){
-            btnStreak.setBackgroundResource(R.drawable.silvermedal);
-        } else if (user.getStreak() > 4 && user.getStreak() < 7) {
-            btnStreak.setBackgroundResource(R.drawable.medal);
-        } else if (user.getStreak() > 6 && user.getStreak() < 9) {
-            btnStreak.setBackgroundResource(R.drawable.crown);
-        } else if (user.getStreak() > 8){
-    btnStreak.setBackgroundResource(R.drawable.winner);
+    // This is reusable in a sense that it is called to assign the icon to the current streak
+    // as well as the users best streak.
+    public void setStreakIcon(int streak, Button streakBtn) {
+
+        switch (streak) {
+            case 0:
+            case 1:
+            case 2:
+                streakBtn.setBackgroundResource(R.drawable.fire);
+                break;
+            case 3:
+            case 4:
+                streakBtn.setBackgroundResource(R.drawable.silvermedal);
+                break;
+            case 5:
+            case 6:
+                streakBtn.setBackgroundResource(R.drawable.medal);
+                break;
+            case 7:
+            case 8:
+                streakBtn.setBackgroundResource(R.drawable.crown);
+                break;
+            case 9:
+            case 10:
+                streakBtn.setBackgroundResource(R.drawable.winner);
+                break;
+            default:
+                streakBtn.setBackgroundResource(R.drawable.run);
         }
     }
 }
