@@ -7,6 +7,6 @@
      >
 
 
-    <solid android:color="@color/runBlueTransparent"></solid>
+    <solid android:color="@color/colorWhiteVTransparent"></solid>
 
 </shape>

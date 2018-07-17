@@ -9,5 +9,6 @@
     <color name="black">#000000</color>
     <color name="viewline">#8395A6</color>
     <color name="colorWhiteTransparent">#80ffffff</color>
+    <color name="colorWhiteVTransparent">#35ffffff</color>
     <color name="runBlueTransparent">#7f8892</color>
 </resources>

@@ -114,10 +114,10 @@ public class NotificationHelper {
             notificationId = NotificationModel.ID_DISSONANCE; //dissonance id
         } else {//dissonance = false
             if (dissonanceFormModel.getCompetitiveness() <= 1) { //Low/ Med competitiveness
-                s = Notifications.lowCompetitiveness.LOW_STRING;
+                s = notificationModel.lowMotivation(MotivationalMessages.getRandomNumberInRange(1,3));
                 largeIcon = BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.run);
             } else if (dissonanceFormModel.getCompetitiveness() > 1) { //Highly competitive individual
-                s = Notifications.highCompetitiveness.HIGH_STRING;
+                s = notificationModel.highMotivation(MotivationalMessages.getRandomNumberInRange(1,6));
                 largeIcon = BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.winner);
             }
             notificationId = NotificationModel.ID_NO_DISSONANCE; // no dissonance id
@@ -141,7 +141,7 @@ public class NotificationHelper {
     }
 
     public void pushGoalReachedNotification() {
-        s = notificationModel.goalReached(MotivationalMessages.getRandomNumberInRange(1,3));
+        s = notificationModel.goalReached(MotivationalMessages.getRandomNumberInRange(1,4));
         Bitmap largeIcon = BitmapFactory.decodeResource(MainActivity.mContext.getResources(), R.drawable.fireworks);
         notificationId =  NotificationModel.ID_GOAL_COMPLETE;
         if(remaining < 0){
@@ -217,15 +217,15 @@ public class NotificationHelper {
                 stepsModel.setDailyStepsGoal(generateNewUserGoal());
                 dbHelper.updateStepGoal();
             } else { //user can make it
-                response = notificationModel.lowUserUrgent(MotivationalMessages.getRandomNumberInRange(1, 2));
+                response = notificationModel.lowUserUrgent(MotivationalMessages.getRandomNumberInRange(1, 3));
             }
         } else if (t >= 7 && t <= 10) { //4-8
-            response = notificationModel.lowUserMiddle(MotivationalMessages.getRandomNumberInRange(1, 3));
+            response = notificationModel.lowUserMiddle(MotivationalMessages.getRandomNumberInRange(1, 5));
         } else if (t >= 11) { //9+
             if (stepsModel.getDailysteps() < stepsModel.getDailyStepsGoal() * 0.03) {
                 response = notificationModel.lowUserMild(10);
             } else {
-                response = notificationModel.lowUserMild(MotivationalMessages.getRandomNumberInRange(1, 2));
+                response = notificationModel.lowUserMild(MotivationalMessages.getRandomNumberInRange(1, 4));
             }
         }
         return response;
@@ -239,10 +239,10 @@ public class NotificationHelper {
                 stepsModel.setDailyStepsGoal(generateNewUserGoal());
                 dbHelper.updateStepGoal();
             } else { //user can make it
-                response = notificationModel.medUserUrgent(MotivationalMessages.getRandomNumberInRange(1, 3));
+                response = notificationModel.medUserUrgent(MotivationalMessages.getRandomNumberInRange(1, 4));
             }
         } else if (t >= 7 && t <= 10) { //4-8
-            response = notificationModel.medUserMiddle(MotivationalMessages.getRandomNumberInRange(1, 5));
+            response = notificationModel.medUserMiddle(MotivationalMessages.getRandomNumberInRange(1, 6));
         } else if (t >= 11) { //9+
             if (stepsModel.getDailysteps() < stepsModel.getDailyStepsGoal() * 0.03) {
                 response = notificationModel.medUserMild(10);
@@ -261,10 +261,10 @@ public class NotificationHelper {
                 stepsModel.setDailyStepsGoal(generateNewUserGoal());
                 dbHelper.updateStepGoal();
             } else { //user can make it
-                response = notificationModel.highUserUrgent(MotivationalMessages.getRandomNumberInRange(1, 5));
+                response = notificationModel.highUserUrgent(MotivationalMessages.getRandomNumberInRange(1, 6));
             }
         } else if (t >= 7 && t <= 10) { //4-8
-            response = notificationModel.highUserMiddle(MotivationalMessages.getRandomNumberInRange(1, 7));
+            response = notificationModel.highUserMiddle(MotivationalMessages.getRandomNumberInRange(1, 8));
         } else if (t >= 11) { //9+
             if (stepsModel.getDailysteps() < stepsModel.getDailyStepsGoal() * 0.03) {
                 response = notificationModel.highUserMild(10);

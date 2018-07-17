@@ -2,6 +2,8 @@ package bath.run.model;
 
 import android.util.Log;
 
+import bath.run.MainActivity;
+import bath.run.NotificationHelper;
 import bath.run.database.DatabaseHelper;
 import bath.run.database.User;
 
@@ -33,7 +35,7 @@ public class GoalCompletion {
         if (callType == 1) { //user reaches step goal
             stepsModel.setDailyStepsGoal(stepsModel.getDailyStepsGoal() + totalGoal);
         } else { //user loses streak and thus does not reach step goal
-            stepsModel.setDailyStepsGoal(stepsModel.getDailyStepsGoal() + totalGoal);
+            stepsModel.setDailyStepsGoal(stepsModel.getDailyStepsGoal() - totalGoal);
         }
     }
 
@@ -50,6 +52,8 @@ public class GoalCompletion {
             db.updateStepGoal();
             db.updateProfile(2);
 
+            NotificationHelper notificationHelper = new NotificationHelper(MainActivity.mContext);
+            notificationHelper.pushGoalReachedNotification();
             user.setDay(true, day);
             for (int i = 0; i <= dotw.DAYS_IN_WEEK; i++) {
                 if (day == i) {
@@ -66,6 +70,9 @@ public class GoalCompletion {
                 user.setStreak(user.getStreak() + 1);
                 db.updateStepGoal();
                 db.updateProfile(2);
+
+                NotificationHelper notificationHelper = new NotificationHelper(MainActivity.mContext);
+                notificationHelper.pushGoalReachedNotification();
                 user.setDay(true, day);
                 for (int i = 0; i <= dotw.DAYS_IN_WEEK; i++) {
                     if (day == i) {

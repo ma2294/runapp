@@ -12,10 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.Toast;
 
-import bath.run.model.DissonanceFormModel;
 import bath.run.R;
 import bath.run.model.StepsModel;
 
@@ -30,9 +28,12 @@ public class WelcomeGoalFragment extends Fragment {
     StepsModel stepsModel = StepsModel.getInstance();
     private Button btnSubmitStepGoal;
     private EditText editTextStepGoal;
-    private RadioGroup radioGroup;
+    private RadioGroup radioGroupGoal;
+    private RadioGroup radioGroupNotifications;
     private RadioButton radioStatic;
     private RadioButton radioTailored;
+    private RadioButton radioNotifyDefault;
+    private RadioButton radioNotifyScheduled;
 
     onStepGoalCompletionListener mCallback;
 
@@ -45,9 +46,14 @@ public class WelcomeGoalFragment extends Fragment {
 
         btnSubmitStepGoal = (Button) view.findViewById(R.id.btnSubmitStepGoal);
         editTextStepGoal = (EditText) view.findViewById(R.id.editStepGoal);
-        radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup);
-        radioStatic = (RadioButton) view.findViewById(R.id.radio_static);
-        radioTailored = (RadioButton) view.findViewById(R.id.radio_tailored);
+        radioGroupGoal = (RadioGroup) view.findViewById(R.id.radioGroupGoal);
+        radioGroupNotifications = (RadioGroup) view.findViewById(R.id.radioGroupTimeRange);
+        radioStatic = (RadioButton) view.findViewById(R.id.radio_static_goal);
+        radioTailored = (RadioButton) view.findViewById(R.id.radio_tailored_goal);
+        radioNotifyDefault = (RadioButton) view.findViewById(R.id.radio_static_range);
+        radioNotifyScheduled = (RadioButton) view.findViewById(R.id.radio_tailored_range);
+
+
         btnSubmitStepGoal.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if(!radioStatic.isChecked() && !radioTailored.isChecked()) {
@@ -61,16 +67,16 @@ public class WelcomeGoalFragment extends Fragment {
                 }
                 int finalValue =Integer.parseInt(value);
 
-                System.out.println(radioGroup.getCheckedRadioButtonId());
+                System.out.println(radioGroupGoal.getCheckedRadioButtonId());
 
                 stepsModel.setDailyStepsGoal(finalValue);
 
 
-                switch(radioGroup.getCheckedRadioButtonId()) {
-                    case R.id.radio_static:
+                switch(radioGroupGoal.getCheckedRadioButtonId()) {
+                    case R.id.radio_static_goal:
                         System.out.println("Radio static "+radioStatic.getId());
                         break;
-                    case R.id.radio_tailored:
+                    case R.id.radio_tailored_goal:
                         System.out.println("Radio tailored "+radioTailored.getId());
                         break;
 

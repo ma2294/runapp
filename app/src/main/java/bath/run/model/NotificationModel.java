@@ -41,14 +41,33 @@ public class NotificationModel {
     private String userHighUrgent2 = "To remain a physically active individual, you should complete your goal before the day is up. ";
 
     private String userHighMid = "You are currently under your step per hour goal. It would be advised to correct this in order to maintain your daily streak";
-    private String userHighMid2 = "It is a beautiful day for a run!";
+    private String userHighMid2 = "The weather conditions in your local area are perfect for a run!";
 
     private String userHighMild = "Planning to run today? Why not get it over and done with!";
     private String userHighMild2 = "Why not try some morning stretches? Athletes often perform these to enhance their exercise.";
 
+    //INTENTIONALLY CAUSE DISSONANCE
+    private String dissonanceHighNegative = "Those who conduct infrequent exercise are more at risk of heart conditions";
+    private String dissonanceHighNegative2= "";
+    //REDUCE DISSONANCE
     private String completeSteps = "Woo! Your streak has increased to " + user.getStreak() + ".";
     private String completeSteps2 = "With taking that final step you have reached your daily step goal!";
     private String completeSteps3 = stepsModel.getDailyStepsGoal() + " steps? " + " Completed.";
+    private String dissonanceHighPositive = "By continuously meeting your fitness goals, you are decreasing your chances of experiencing a heart condition later in life.";
+
+
+    //TODO implement these below and add to Notification helper in motivation section where dissonance is not detected.
+    //USER HAS NO DISSONANCE BUT NEED TO SUSTAIN MOTIVATION && LOW MOTIVATION
+    private String lowstring = "Consistency with exercise is the key to securing a healthy lifestyle.";
+    private String lowstring2 = "Work hard to meet your goals today. Rest tomorrow.";
+    private String lowstring3 = "If you live for today and save for tomorrow you are more likely to have a short filled life.";
+
+
+
+    //USER HAS NO DISSONANCE BUT NEED TO SUSTAIN MOTIVATION && HIGH MOTIVATION
+    private String highstring = "You are currently ranked in 5th place out our 10 active users"; //causes dissonance for someone competitive and will motivate exercise
+    private String highstring2 = "Today, you have travelled the most distance out of all of our users."; //this message will be receieved after the previous one as feedback to the user.
+    private String highstring3 = "Finish your remaining steps to join our 3 other daily victors!";
 
     public String lowUserUrgent(int value) {
         switch (value) {
@@ -59,7 +78,9 @@ public class NotificationModel {
             case 2:
                 response = userClose;
                 break;
-
+            case 3:
+                response = dissonanceHighNegative;
+                break;
             case 10:
                 response = userTooFar;
                 break;
@@ -82,8 +103,10 @@ public class NotificationModel {
             case 3:
                 response = userMidProductivity;
                 break;
-
             case 4:
+                response = dissonanceHighNegative;
+                break;
+            case 5:
                 response = userMidMessage;
                 break;
             default:
@@ -135,7 +158,9 @@ public class NotificationModel {
             case 3:
                 response = userMedMidUrgent;
                 break;
-
+            case 4:
+                response = dissonanceHighNegative;
+                break;
             case 10:
                 response = userTooFar;
                 break;
@@ -164,6 +189,9 @@ public class NotificationModel {
                 break;
 
             case 5:
+                response = dissonanceHighNegative;
+                break;
+            case 6:
                 response = userMedMid;
                 break;
 
@@ -225,6 +253,9 @@ public class NotificationModel {
             case 5:
                 response = userHighUrgent2;
                 break;
+            case 6:
+                response = dissonanceHighNegative;
+                break;
             case 10:
                 response = userTooFar;
                 break;
@@ -261,6 +292,9 @@ public class NotificationModel {
                 break;
             case 7:
                 response = userHighMid2;
+                break;
+            case 8:
+                response = dissonanceHighNegative;
                 break;
             default:
                 Log.e(TAG, "lowUserUrgent: Value does not exist: " + value);
@@ -313,6 +347,53 @@ public class NotificationModel {
                 break;
             case 3:
                 response = completeSteps3;
+                break;
+            case 4:
+                response = dissonanceHighPositive;
+                break;
+            default:
+                //
+        }
+        return response;
+    }
+
+    public String lowMotivation(int value){
+        switch(value) {
+            case 1:
+                response = lowstring;
+                break;
+            case 2:
+                response = lowstring2;
+                break;
+            case 3:
+                response = lowstring3;
+                break;
+            default:
+                //
+        }
+        return response;
+    }
+
+    public String highMotivation(int value){
+        switch(value) {
+            case 1:
+                response = lowstring;
+                break;
+            case 2:
+                response = lowstring2;
+                break;
+            case 3:
+                response = lowstring3;
+                break;
+
+            case 4:
+                response = highstring;
+                break;
+            case 5:
+                response = highstring2;
+                break;
+            case 6:
+                response = highstring3;
                 break;
 
             default:

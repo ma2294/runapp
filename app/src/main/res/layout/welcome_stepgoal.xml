@@ -96,7 +96,7 @@
         app:layout_constraintTop_toBottomOf="@+id/editStepGoal" />
 
     <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/radioGroup"
+        android:id="@+id/radioGroupGoal"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -108,7 +108,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView5">
 
         <RadioButton
-            android:id="@+id/radio_static"
+            android:id="@+id/radio_static_goal"
             style="@android:style/Widget.Material.CompoundButton.RadioButton"
             android:layout_width="275dp"
             android:layout_height="wrap_content"
@@ -116,7 +116,7 @@
             android:textSize="12sp" />
 
         <RadioButton
-            android:id="@+id/radio_tailored"
+            android:id="@+id/radio_tailored_goal"
             android:layout_width="275dp"
             android:layout_height="wrap_content"
             android:text="Tailored goal (adjusted based on your performance)"
@@ -135,7 +135,7 @@
                 android:text="@string/txtViewtimeRange"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
+                app:layout_constraintTop_toBottomOf="@+id/radioGroupGoal" />
 
             <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/radioGroupTimeRange"
