@@ -8,9 +8,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import bath.run.database.User;
 import bath.run.model.GoalCompletion;
@@ -35,11 +38,9 @@ public class StepCountFragment extends Fragment {
     private TextView tvDailyStepsPercentage;
     private TextView tvDailySteps;
     private TextView tvMotivationalMessage;
-    private TextView txtStreak;
-    private TextView txtBestStreak;
-    private Button btnStreak;
-    private Button btnBestStreak;
     private ProgressBar progressBarDailySteps;
+
+
     public Runnable uiUpdater = new Runnable() {
         @Override
         public void run() {
@@ -48,10 +49,7 @@ public class StepCountFragment extends Fragment {
             progress = ((int) total);
             tvDailyStepsPercentage.setText(String.valueOf(progress) + "%");
             progressBarDailySteps.setProgress(progress);
-            txtStreak.setText(String.valueOf(user.getStreak()));
-            txtBestStreak.setText(String.valueOf(user.getBestStreak()));
             handler.postDelayed(uiUpdater, delayMillis);
-            System.out.println("");
         }
     };
 
@@ -65,17 +63,16 @@ public class StepCountFragment extends Fragment {
         tvDailyStepsPercentage = (TextView) view.findViewById(R.id.tvDailyCaloriesPercentage);
         progressBarDailySteps = (ProgressBar) view.findViewById(R.id.progressBarDailyCalories);
         tvMotivationalMessage = (TextView) view.findViewById(R.id.tvMotivationalMessage);
-        btnStreak = (Button) view.findViewById(R.id.btnStreak);
-        btnBestStreak = (Button) view.findViewById(R.id.btnBestStreak);
-        txtStreak = (TextView) view.findViewById(R.id.txtStreak);
-        txtBestStreak = (TextView) view.findViewById(R.id.txtBestStreak);
         tvMotivationalMessage.setText(mm.getMotivationalMessage());
         total = GoalCompletion.workOutRemainingPercentage(stepsModel.getDailysteps(), stepsModel.getDailyStepsGoal());
-        txtStreak.setText(String.valueOf(user.getStreak()));
         Log.d(TAG, "onCreateView: started..");
 
+
+        // fade out view nicely after 5 seconds
         return view;
     }
+
+
 
     public void startUpdatingUi() {
         uiUpdater.run();
@@ -96,8 +93,6 @@ public class StepCountFragment extends Fragment {
     public void onResume() {
         super.onResume();
         startUpdatingUi();
-        setStreakIcon(user.getStreak(), btnStreak);
-        setStreakIcon(user.getBestStreak(), btnBestStreak);
     }
 
     @Override
@@ -105,37 +100,6 @@ public class StepCountFragment extends Fragment {
         super.onDestroy();
 
         Log.i(TAG, "onDestroy: Step Fragment");
-    }
-
-    // This is reusable in a sense that it is called to assign the icon to the current streak
-    // as well as the users best streak.
-    public void setStreakIcon(int streak, Button streakBtn) {
-
-        switch (streak) {
-            case 0:
-            case 1:
-            case 2:
-                streakBtn.setBackgroundResource(R.drawable.fire);
-                break;
-            case 3:
-            case 4:
-                streakBtn.setBackgroundResource(R.drawable.silvermedal);
-                break;
-            case 5:
-            case 6:
-                streakBtn.setBackgroundResource(R.drawable.medal);
-                break;
-            case 7:
-            case 8:
-                streakBtn.setBackgroundResource(R.drawable.crown);
-                break;
-            case 9:
-            case 10:
-                streakBtn.setBackgroundResource(R.drawable.winner);
-                break;
-            default:
-                streakBtn.setBackgroundResource(R.drawable.run);
-        }
     }
 }
 

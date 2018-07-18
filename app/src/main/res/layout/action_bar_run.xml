@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:paddingStart="22dp"
+        android:layout_marginLeft="-15dp"
         android:text="Run."
         android:textColor="@color/white"
         android:textSize="20dp" />

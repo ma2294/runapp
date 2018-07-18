@@ -7,7 +7,7 @@
     android:background="@color/black">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/imageViewBg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha=".6"
@@ -24,7 +24,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageView" />
+        app:layout_constraintTop_toTopOf="@+id/imageViewBg" />
 
     <TextView
         android:id="@+id/textView3"
@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="52dp"
         android:text="Start your journey"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewBg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias=".5"
         app:layout_constraintStart_toStartOf="parent" />

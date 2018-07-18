@@ -16,7 +16,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -45,6 +48,7 @@ import bath.run.model.DayOfTheWeekModel;
 import bath.run.model.DissonanceFormModel;
 import bath.run.model.GoalCompletion;
 import bath.run.model.JobModel;
+import bath.run.model.MotivationalMessages;
 import bath.run.model.StepsModel;
 
 
@@ -54,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener
         , DissonanceFormFragment.onFormCompletionListener,
         ProfileFragment.onProfileCompleteListener, WelcomeDissonanceFragment.onFormCompletionListener,
-        WelcomeGoalFragment.onStepGoalCompletionListener {
+        WelcomeGoalFragment.onStepGoalCompletionListener, SettingsFormFragment.onSettingsCompletion, View.OnClickListener {
 
     private static final String TAG = "Main";
     public static GoogleApiClient mGoogleApiClient;
@@ -76,6 +80,14 @@ public class MainActivity extends AppCompatActivity implements
     private ImageView imgFri;
     private ImageView imgSat;
     private ImageView imgSun;
+    private ImageView bg;
+    private TextView txtStreak;
+    private TextView txtBestStreak;
+    private TextView txtViewStreakInfo;
+    private Button btnStreakBg;
+    private Button btnStreak;
+    private Button btnBestStreak;
+    private Button btnBestStreakBg;
 
     public static boolean isJobServiceOn(Context context) {
         JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
@@ -114,12 +126,24 @@ public class MainActivity extends AppCompatActivity implements
         setNavigationListener(); // listens for navigation bar clicks
         db.init(); //if db does not exist, creates one.
         mContext = this;
+
+        btnBestStreakBg.setOnClickListener(this);
+        btnStreakBg.setOnClickListener(this);
+
     }
 
 
     @Override
     protected void onStart() {
         super.onStart();
+
+        if (MotivationalMessages.getRandomNumberInRange(1,2) == 1) {
+            bg.setBackgroundResource(R.drawable.image2);
+        } else {
+            bg.setBackgroundResource(R.drawable.test);
+        }
+
+        System.out.println("called");
     }
 
     @Override
@@ -131,14 +155,49 @@ public class MainActivity extends AppCompatActivity implements
         db.pullFromDissonanceDb();
         db.pullFromProfileDb();
         setDayTextView();
-        user.setBestStreak(8);
-        db.updateProfile(0);
+        reloadStreak();
+        setStreakIcon(user.getStreak(), btnStreak);
+        setStreakIcon(user.getBestStreak(), btnBestStreak);
         //Has user visited before? If yes continue, if no open welcome screen and dissonance form.
         if (!dissonanceFormModel.isAnswered()) {
             setupWelcomePager(mViewPagerWelcome);
         }
     }
 
+    // This is reusable in a sense that it is called to assign the icon to the current streak
+    // as well as the users best streak.
+    public void setStreakIcon(int streak, Button streakBtn) {
+
+        switch (streak) {
+            case 0:
+            case 1:
+            case 2:
+                streakBtn.setBackgroundResource(R.drawable.fire);
+                break;
+            case 3:
+            case 4:
+                streakBtn.setBackgroundResource(R.drawable.silvermedal);
+                break;
+            case 5:
+            case 6:
+                streakBtn.setBackgroundResource(R.drawable.medal);
+                break;
+            case 7:
+            case 8:
+                streakBtn.setBackgroundResource(R.drawable.crown);
+                break;
+            case 9:
+            case 10:
+                streakBtn.setBackgroundResource(R.drawable.winner);
+                break;
+            default:
+                streakBtn.setBackgroundResource(R.drawable.run);
+        }
+    }
+    public void reloadStreak () {
+        txtStreak.setText(String.valueOf(user.getStreak()));
+        txtBestStreak.setText(String.valueOf(user.getBestStreak()));
+    }
     public void onConnected(@Nullable Bundle bundle) {
         Log.e("HistoryAPI", "onConnected");
 
@@ -151,36 +210,6 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        //gets specific item
-        int id = item.getItemId();
-
-        switch (id) {
-            case R.id.action_newCalorieGoal:
-                //do something
-                break;
-
-            case R.id.action_newStepGoal:
-                stepsModel.setDailyStepsGoal((int) (stepsModel.getDailyStepsGoal() * 1.5));
-                Toast.makeText(getApplicationContext(), "Your daily goal is being calculated..", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.action_weeklyStepGoal:
-                //do something
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
     private void initViews() {
         imgMon = (ImageView) findViewById(R.id.imgMon);
         imgTue = (ImageView) findViewById(R.id.imgTue);
@@ -189,9 +218,16 @@ public class MainActivity extends AppCompatActivity implements
         imgFri = (ImageView) findViewById(R.id.imgFri);
         imgSat = (ImageView) findViewById(R.id.imgSat);
         imgSun = (ImageView) findViewById(R.id.imgSun);
+        bg = (ImageView) findViewById(R.id.imageViewBg);
         toolbar = (Toolbar) findViewById(R.id.app_bar);
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPagerWelcome = (ViewPager) findViewById(R.id.containerWelcomePage);
+        btnStreak = (Button) findViewById(R.id.btnStreak);
+        btnStreakBg = (Button) findViewById(R.id.btnStreakBg);
+        btnBestStreak = (Button) findViewById(R.id.btnBestStreak);
+        btnBestStreakBg = (Button) findViewById(R.id.btnBestStreakBg);
+        txtStreak = (TextView) findViewById(R.id.txtStreak);
+        txtBestStreak = (TextView) findViewById(R.id.txtBestStreak);
     }
 
     /*
@@ -326,6 +362,11 @@ public class MainActivity extends AppCompatActivity implements
         db.updateDissonance();
     }
 
+    public void onSettingsComplete() {
+        setupViewPager(mViewPager);
+        db.updateStepGoal();
+    }
+
     public void onStepGoalFormCompletion() {
         db.updateStepGoal();
         Toast.makeText(this, "Customising your experience...", Toast.LENGTH_SHORT).show();
@@ -349,7 +390,6 @@ public class MainActivity extends AppCompatActivity implements
      */
     private void setupViewPager(ViewPager viewPager) {
         FormStatePagerAdapter adapter = new FormStatePagerAdapter(getSupportFragmentManager());
-
         adapter.addFragment(new StepCountFragment(), "Steps");
         adapter.addFragment(new CalorieFragment(), "Calorie");
         viewPager.setAdapter(adapter);
@@ -400,6 +440,18 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.e("HistoryAPI", "onConnectionFailed");
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btnBestStreakBg:
+                System.out.println("Clicked best");
+                break;
+            case R.id.btnStreakBg:
+                System.out.println("Clicked normal");
+                break;
+        }
     }
 }
 

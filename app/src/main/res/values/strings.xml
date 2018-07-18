@@ -13,25 +13,25 @@
 
     <string name="goal_welcome_text">Please help Run to gather an understanding
     of your attitude towards exercise. </string>
-    <string name="goal_question_1">Which statement best fits your attitude towards exercising?</string>
+    <string name="goal_question_1">Which statement is most reflective of your attitude towards exercising?</string>
     <string-array name="goal_question_array">
-        <item>Care is low</item>
-        <item>Care is med</item>
-        <item>Care is high</item>
+        <item>I do not care about exercise</item>
+        <item>I care about exercise.</item>
+        <item>I care a lot about exercise.</item>
     </string-array>
 
-    <string name="goal_question_2">Which statement best represents your frequency of exercise?</string>
+    <string name="goal_question_2">Which category best represents how often you exercise?</string>
     <string-array name="goal_question_2_array">
-        <item>low (1-2 times a week)</item>
-        <item>med (3-4 times a week)</item>
-        <item>high (5+ times a week)</item>
+        <item>1-2 times a week</item>
+        <item>3-4 times a week</item>
+        <item>5+ times a week</item>
     </string-array>
 
-    <string name="goal_question_3">Which statement best represents your motivation gained from your competitiveness or peer influence from others</string>
+    <string name="goal_question_3">Do you notice your motivation towards exercise to increase when comparing yourself to others, or to a particular personal end goal.</string>
     <string-array name="goal_question_3_array">
-        <item>low (not motivated)</item>
-        <item>med (slightly motivated)</item>
-        <item>high (significantly motivated)</item>
+        <item>I am not motivated by these</item>
+        <item>I am slightly motivated by these</item>
+        <item>I am significantly motivated by these</item>
     </string-array>
 
 
@@ -40,7 +40,9 @@
     <string name="disclaimer">Please note: This information IS REQUIRED to provide an accurate estimate of your daily calories expended. This data will not be used for any other purpose.</string>
     <string name="txtViewtimeRange">What times of day do you wish to receive notifications?</string>
     <string name="radioStaticTimeRange">Notify me whenever</string>
-    <string name="radioTailoredTimeRange">Notify me ebtween 8 am to 5 pm</string>
+    <string name="radioTailoredTimeRange">Notify me between 8 am and 5 pm</string>
+    <string name="your_top_streak">Your top streak</string>
+    <string name="your_current_streak">The left icon displays your current daily step streak, and the right icon displays your all time highest step streak.</string>
     <string-array name="weight_array">
         <item>Daily</item>
         <item>Weekly</item>

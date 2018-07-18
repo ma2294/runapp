@@ -132,11 +132,12 @@ public class NotificationHelper {
         //TODO set these values in DB and Pull from them in Model class.
         int boundaryStart = 8;
         int boundaryFinish = 22;
-
-        if(dotw.getHour() >= boundaryStart && dotw.getHour() <= boundaryFinish) {
-            return true;
+        //If time is within set bounds OR user has met their daily step goal
+        if(dotw.getHour() >= boundaryStart && dotw.getHour() <= boundaryFinish ||
+                !(stepsModel.getDailysteps() > stepsModel.getDailyStepsGoal())) {
+            return true; // sending notifications
         } else{
-            return  false;
+            return  false; //stop sending notifications
         }
     }
 
@@ -172,6 +173,7 @@ public class NotificationHelper {
                         .bigText(s))
                 .setContentIntent(pendingIntent)
                 .setColor(Color.BLUE)
+                .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_MAX);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(mContext);

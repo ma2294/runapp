@@ -34,6 +34,7 @@ public class SettingsFormFragment extends Fragment {
     private RadioButton radioTailored;
     private RadioButton radioNotifyDefault;
     private RadioButton radioNotifyScheduled;
+    onSettingsCompletion mCallback;
 
 
     @Nullable
@@ -53,32 +54,32 @@ public class SettingsFormFragment extends Fragment {
 
         btnSubmitStepGoal.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if(!radioStatic.isChecked() && !radioTailored.isChecked() ||
+                if (!radioStatic.isChecked() && !radioTailored.isChecked() ||
                         !radioNotifyDefault.isChecked() && !radioNotifyScheduled.isChecked()) {
                     Toast.makeText(getContext(), "Please complete the form.", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                String value= editTextStepGoal.getText().toString();
-                if(value.length() < 1){
+                String value = editTextStepGoal.getText().toString();
+                if (value.length() < 1) {
                     Toast.makeText(getContext(), "Please complete the form", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                int finalValue =Integer.parseInt(value);
+                int finalValue = Integer.parseInt(value);
                 stepsModel.setDailyStepsGoal(finalValue);
 
-                switch(radioGroupGoal.getCheckedRadioButtonId()) {
+                switch (radioGroupGoal.getCheckedRadioButtonId()) {
                     case R.id.radio_static_goal:
-                        System.out.println("Radio static "+radioStatic.getId());
+                        System.out.println("Radio static " + radioStatic.getId());
                         break;
                     case R.id.radio_tailored_goal:
-                        System.out.println("Radio tailored "+radioTailored.getId());
+                        System.out.println("Radio tailored " + radioTailored.getId());
                         break;
 
                     default:
                         //
                 }
 
-                switch(radioGroupNotifications.getCheckedRadioButtonId()) {
+                switch (radioGroupNotifications.getCheckedRadioButtonId()) {
                     case R.id.radio_static_range:
                         System.out.println("Radio Static range");
                         break;
@@ -89,9 +90,22 @@ public class SettingsFormFragment extends Fragment {
                     default:
                         //
                 }
+           mCallback.onSettingsComplete();
             }
         });
         return view;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            mCallback = (SettingsFormFragment.onSettingsCompletion) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " onSettingsCompletion" +
+                    "is not implemented");
+        }
     }
 
     @Override
@@ -105,6 +119,9 @@ public class SettingsFormFragment extends Fragment {
         super.onDestroy();
 
         Log.i(TAG, "onDestroy: Dissonance form Fragment");
+    }
+    public interface onSettingsCompletion {
+        public void onSettingsComplete();
     }
 }
 
