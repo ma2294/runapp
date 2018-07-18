@@ -47,7 +47,7 @@ public class DissonanceFormFragment extends Fragment {
                 dissonanceFormModel.setFrequency((int) spinnerQ2.getSelectedItemId());
                 dissonanceFormModel.setCompetitiveness((int) spinnerQ3.getSelectedItemId());
                 dissonanceFormModel.setAnswered(true);
-                mCallback.onFormCompletion();
+                mCallback.onDissonanceFormCompletion();
             }
         });
         return view;
@@ -80,7 +80,7 @@ public class DissonanceFormFragment extends Fragment {
 
 
     public interface onFormCompletionListener {
-        public void onFormCompletion();
+        public void onDissonanceFormCompletion();
     }
 }
 

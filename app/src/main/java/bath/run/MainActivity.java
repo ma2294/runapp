@@ -362,6 +362,11 @@ public class MainActivity extends AppCompatActivity implements
         db.updateDissonance();
     }
 
+    public void onDissonanceFormCompletion() {
+        setupViewPager(mViewPager);
+        db.updateDissonance();
+    }
+
     public void onSettingsComplete() {
         setupViewPager(mViewPager);
         db.updateStepGoal();
